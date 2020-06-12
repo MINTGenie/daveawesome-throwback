@@ -1,5 +1,5 @@
 {
-    "name": "DaveAwesome_tilemap_fix",
+    "name": "DaveAwesome_remove_destoy_perlife",
     "description": "",
     "dependencies": {
         "device": "*",
