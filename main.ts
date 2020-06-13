@@ -2,7 +2,8 @@ enum ActionKind {
     Walking,
     Idle,
     Jumping,
-    weedDance
+    weedDance,
+    Walk_left
 }
 namespace SpriteKind {
     export const Keys = SpriteKind.create()
@@ -1631,9 +1632,6 @@ game.onUpdate(function () {
 `)
             }
         }
-    }
-    if (game.runtime() > firedNow + 1000) {
-        allowFiring = true
     }
 })
 game.onUpdateInterval(500, function () {
