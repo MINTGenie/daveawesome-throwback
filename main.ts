@@ -3,7 +3,11 @@ enum ActionKind {
     Idle,
     Jumping,
     weedDance,
-    Walk_left
+    Walk_left,
+    anim_jetpk,
+    anim_jp_left,
+    Jump_left,
+    idle_left
 }
 namespace SpriteKind {
     export const Keys = SpriteKind.create()
@@ -344,6 +348,9 @@ namespace myTiles {
 . . . . . . . . . . . . . . . . 
 `
 }
+controller.anyButton.onEvent(ControllerButtonEvent.Released, function () {
+    button_released = true
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
     if (_1stOccurance == 0) {
         _1stOccurance = 1
@@ -447,6 +454,240 @@ function addYellowGems () {
         tiles.placeOnTile(Yellow_Gems, value)
         tiles.setTileAt(value, myTiles.tile0)
     }
+}
+function dave_animations () {
+    anim_left = animation.createAnimation(ActionKind.Walk_left, 200)
+    anim_left.addAnimationFrame(img`
+. . . . . 2 2 2 2 2 2 . . . . . 
+. . . 2 2 2 2 2 2 2 2 . . . . . 
+. . . . . d f d b b b . . . . . 
+. . . . d d d d b d b . . . . . 
+. . . . . . d d d d . . . . . . 
+. . . . . . 1 1 1 1 . . . . . . 
+. . . . . 1 d d 1 1 . . . . . . 
+. . . . d d d d 1 1 . . . . . . 
+. . . d d d 1 1 1 1 . . . . . . 
+. . . d d f f f f f . . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . 8 8 8 f 8 8 . . . . . . 
+. . . . 8 8 8 . f 8 8 . . . . . 
+. . . 8 8 8 . . . f 8 f 1 . . . 
+. . 1 f f . . . . . . f 1 . . . 
+. . 1 1 1 . . . . . . 1 1 . . . 
+`)
+    anim_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . . . . 1 1 1 1 . . . . . 
+. . . . . . 1 1 1 1 d d . . . . 
+. . . . . . d 1 1 1 d d d . . . 
+. . . . . d 1 1 1 1 1 d d . . . 
+. . . . . d f f f f f . d d . . 
+. . . . . d 8 8 8 8 8 . d d . . 
+. . . . . . 8 8 8 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . 1 f f 1 f f . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    anim_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . . d d 1 1 1 1 . . . . . 
+. . . . d d 1 1 1 d d . . . . . 
+. . . d d d 1 1 1 d d d . . . . 
+. . . d . . 1 1 1 1 d d d . . . 
+. . . . . . f f f f f . d . . . 
+. . . . . . 8 8 8 8 8 . . . . . 
+. . . . . 8 8 8 f 8 8 8 . . . . 
+. . . 1 . 8 8 f . . 8 8 . . . . 
+. . 1 f 8 8 f . . . . 8 8 . . . 
+. . 1 1 f . . . . . 1 f f . . . 
+. . . 1 1 . . . . . 1 1 1 . . . 
+`)
+    animation.attachAnimation(Dave, anim_left)
+    anim_right = animation.createAnimation(ActionKind.Walking, 200)
+    anim_right.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . . . . . . 
+. . . . d 1 1 d d 1 . . . . . . 
+. . . . d 1 1 d d d d . . . . . 
+. . . d d 1 1 1 1 d d d . . . . 
+. . . . . f f f f f d d . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 f 8 8 8 . . . . . 
+. . . . 8 8 f . 8 8 8 . . . . . 
+. . 1 f 8 f . . . 8 8 8 . . . . 
+. . 1 f . . . . . . f f 1 . . . 
+. . 1 1 . . . . . . 1 1 1 . . . 
+`)
+    anim_right.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . . . . . . 
+. . . . d d 1 1 1 1 . . . . . . 
+. . . d d d 1 1 1 d . . . . . . 
+. . . d d 1 1 1 1 1 d . . . . . 
+. . d d . f f f f f d . . . . . 
+. . d d . 8 8 8 8 8 d . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . f f 1 f f 1 . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    anim_right.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 d d . . . . . 
+. . . . . d d 1 1 1 d d . . . . 
+. . . . d d d 1 1 1 d d d . . . 
+. . . d d d 1 1 1 1 . . d . . . 
+. . . d . f f f f f . . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . 8 8 8 f 8 8 8 . . . . . 
+. . . . 8 8 . . f 8 8 . 1 . . . 
+. . . 8 8 . . . . f 8 8 f 1 . . 
+. . . f f 1 . . . . . f 1 . . . 
+. . . 1 1 1 . . . . . 1 . . . . 
+`)
+    animation.attachAnimation(Dave, anim_right)
+    anim_idle = animation.createAnimation(ActionKind.Idle, 100)
+    anim_idle.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . . . . . . 
+. . . . d d 1 1 1 1 . . . . . . 
+. . . d d d 1 1 1 d . . . . . . 
+. . . d d 1 1 1 1 1 d . . . . . 
+. . d d . f f f f f d . . . . . 
+. . d d . 8 8 8 8 8 d . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . f f 1 f f 1 . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_idle)
+    anim_idle_left = animation.createAnimation(ActionKind.idle_left, 100)
+    anim_idle_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . . . . 1 1 1 1 . . . . . 
+. . . . . . 1 1 1 1 d d . . . . 
+. . . . . . d 1 1 1 d d d . . . 
+. . . . . d 1 1 1 1 1 d d . . . 
+. . . . . d f f f f f . d d . . 
+. . . . . d 8 8 8 8 8 . d d . . 
+. . . . . . 8 8 8 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . 1 f f 1 f f . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_idle_left)
+    anim_jetpk = animation.createAnimation(ActionKind.anim_jetpk, 100)
+    anim_jetpk.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . 7 7 . d d d d . . . . . . . 
+. . 7 7 7 1 1 1 1 . . . . . . . 
+. . 1 7 d d 1 1 1 1 . . . . . . 
+. . 1 7 d d 1 1 1 d . . . . . . 
+. . a 7 d d d 1 1 1 . . . . . . 
+. . a a 7 d d d f f . . . . . . 
+. 2 5 5 . 8 8 8 8 8 . . . . . . 
+. 2 5 2 . 8 8 8 8 8 8 8 8 . . . 
+. . 2 . . 8 8 8 8 f 8 8 8 . . . 
+. . . . . . . . 8 8 f 8 8 . . . 
+. . . . . . . . 8 8 1 8 8 1 . . 
+. . . . . . . . 1 1 1 1 1 1 . . 
+`)
+    animation.attachAnimation(Dave, anim_jetpk)
+    anim_jetpk_left = animation.createAnimation(ActionKind.anim_jp_left, 100)
+    anim_jetpk_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . 7 7 . . 
+. . . . . . . 1 1 1 1 7 7 7 . . 
+. . . . . . 1 1 1 1 d d 7 1 . . 
+. . . . . . d 1 1 1 d d 7 1 . . 
+. . . . . . 1 1 1 d d d 7 a . . 
+. . . . . . f f d d d 7 a a . . 
+. . . . . . 8 8 8 8 8 . 5 5 2 . 
+. . . 8 8 8 8 8 8 8 8 . 2 5 2 . 
+. . . 8 8 8 f 8 8 8 8 . . 2 . . 
+. . . 8 8 f 8 8 . . . . . . . . 
+. . 1 8 8 1 8 8 . . . . . . . . 
+. . 1 1 1 1 1 1 . . . . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_jetpk_left)
+    anim_jump = animation.createAnimation(ActionKind.Jumping, 200)
+    anim_jump.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . d . . . . 
+. . . d d 1 1 d d 1 d d . . . . 
+. . d d d 1 1 d d d d d . . . . 
+. . d d . 1 1 1 1 d d . . . . . 
+. . . . . f f f f f . . . . . . 
+. . . . . 8 8 8 8 8 8 8 . . . . 
+. . . . . 8 8 8 f f 8 8 . . . . 
+. . 1 f 8 8 f . . . f 8 . . . . 
+. . 1 f 8 f . . . . f f 1 . . . 
+. . 1 1 . . . . . . 1 1 1 . . . 
+. . . . . . . . . . . . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_jump)
+    anim_jump_left = animation.createAnimation(ActionKind.Jump_left, 200)
+    anim_jump_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . d . . 1 1 1 1 . . . . . 
+. . . . d d 1 d d 1 1 d d . . . 
+. . . . d d d d d 1 1 d d d . . 
+. . . . . d d 1 1 1 1 . d d . . 
+. . . . . . . f f f f . . . . . 
+. . . . . 8 8 8 8 8 8 . . . . . 
+. . . . . 8 8 f f 8 8 . . . . . 
+. . . . . 8 f . . f 8 8 f 1 . . 
+. . . . 1 f f . . . f 8 f 1 . . 
+. . . . 1 1 1 . . . . . 1 1 . . 
+. . . . . . . . . . . . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_jump_left)
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Keys, function (sprite, otherSprite) {
     info.changeScoreBy(1000)
@@ -1282,6 +1523,9 @@ function create_Crowns () {
         tiles.setTileAt(value, myTiles.tile0)
     }
 }
+controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
+    button_released = false
+})
 function CreateDave () {
     Dave = sprites.create(img`
 . . . . 2 2 2 2 2 2 . . . . . . 
@@ -1311,6 +1555,7 @@ function CreateDave () {
     DaveX = Dave.x
     DaveY = Dave.y
     dave_facing_right = true
+    dave_animations()
 }
 function create_Gun () {
     for (let value of tiles.getTilesByType(myTiles.tile15)) {
@@ -1513,8 +1758,16 @@ let has_gun = false
 let JETPACK_MAX_FUEL = 0
 let Dave_flipped = false
 let JP_change = false
-let Dave: Sprite = null
 let HaveKey = 0
+let anim_jump_left: animation.Animation = null
+let anim_jump: animation.Animation = null
+let anim_jetpk_left: animation.Animation = null
+let anim_jetpk: animation.Animation = null
+let anim_idle_left: animation.Animation = null
+let anim_idle: animation.Animation = null
+let anim_right: animation.Animation = null
+let Dave: Sprite = null
+let anim_left: animation.Animation = null
 let Yellow_Gems: Sprite = null
 let Spiderrrr: Sprite = null
 let kill_count = 0
@@ -1525,6 +1778,7 @@ let has_jetpack = false
 let jetpackON = false
 let CurrentTime = 0
 let _1stOccurance = 0
+let button_released = false
 let Level_Loaded = false
 let MaxLevel = 0
 let respawn = false
@@ -1547,91 +1801,31 @@ game.showLongText("Dave Awesome!!!              -Arrows Move  -A for Fire    -B 
 game.splash("Collect Gems &", "Find the Key to the door")
 game.onUpdate(function () {
     if (controller.anyButton.isPressed() || JP_change) {
-        if (!(dave_facing_right)) {
-            if (!(Dave_flipped)) {
-                if (jetpackON) {
-                    Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . 7 7 . d d d d . . . . . . . 
-. . 7 7 7 1 1 1 1 . . . . . . . 
-. . 1 7 d d 1 1 1 1 . . . . . . 
-. . 1 7 d d 1 1 1 d . . . . . . 
-. . a 7 d d d 1 1 1 . . . . . . 
-. . a a 7 d d d f f . . . . . . 
-. 2 5 5 . 8 8 8 8 8 . . . . . . 
-. 2 5 2 . 8 8 8 8 8 8 8 8 . . . 
-. . 2 . . 8 8 8 8 f 8 8 8 . . . 
-. . . . . . . . 8 8 f 8 8 . . . 
-. . . . . . . . 8 8 1 8 8 1 . . 
-. . . . . . . . 1 1 1 1 1 1 . . 
-`)
-                } else {
-                    Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . . . . d d d d . . . . . . . 
-. . . . . 1 1 1 1 . . . . . . . 
-. . . . d d 1 1 1 1 . . . . . . 
-. . . d d d 1 1 1 d . . . . . . 
-. . . d d 1 1 1 1 1 d . . . . . 
-. . d d . f f f f f d . . . . . 
-. . d d . 8 8 8 8 8 d . . . . . 
-. . . . . 8 8 8 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . f f 1 f f 1 . . . . . 
-. . . . . 1 1 1 1 1 1 . . . . . 
-`)
-                }
-                Dave.image.flipX()
-                Dave_flipped = true
+        if (jetpackON) {
+            animation.setAction(Dave, ActionKind.anim_jetpk)
+            if (controller.dx() < 0) {
+                animation.setAction(Dave, ActionKind.anim_jp_left)
             }
         } else {
-            if (jetpackON) {
-                Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . 7 7 . d d d d . . . . . . . 
-. . 7 7 7 1 1 1 1 . . . . . . . 
-. . 1 7 d d 1 1 1 1 . . . . . . 
-. . 1 7 d d 1 1 1 d . . . . . . 
-. . a 7 d d d 1 1 1 . . . . . . 
-. . a a 7 d d d f f . . . . . . 
-. 2 5 5 . 8 8 8 8 8 . . . . . . 
-. 2 5 2 . 8 8 8 8 8 8 8 8 . . . 
-. . 2 . . 8 8 8 8 f 8 8 8 . . . 
-. . . . . . . . 8 8 f 8 8 . . . 
-. . . . . . . . 8 8 1 8 8 1 . . 
-. . . . . . . . 1 1 1 1 1 1 . . 
-`)
+            if (controller.dy() < -15 && (controller.dx() < 0 || !(dave_facing_right))) {
+                animation.setAction(Dave, ActionKind.Jump_left)
+            } else if (controller.dy() < -15 && (controller.dx() > 0 || dave_facing_right)) {
+                animation.setAction(Dave, ActionKind.Jumping)
             } else {
-                Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . . . . d d d d . . . . . . . 
-. . . . . 1 1 1 1 . . . . . . . 
-. . . . d d 1 1 1 1 . . . . . . 
-. . . d d d 1 1 1 d . . . . . . 
-. . . d d 1 1 1 1 1 d . . . . . 
-. . d d . f f f f f d . . . . . 
-. . d d . 8 8 8 8 8 d . . . . . 
-. . . . . 8 8 8 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . f f 1 f f 1 . . . . . 
-. . . . . 1 1 1 1 1 1 . . . . . 
-`)
+                if (controller.dx() < 0 && !(button_released)) {
+                    animation.setAction(Dave, ActionKind.Walk_left)
+                } else if (controller.dx() > 0 && !(button_released)) {
+                    animation.setAction(Dave, ActionKind.Walking)
+                } else if (controller.dx() == 0 && (dave_facing_right || button_released)) {
+                    animation.setAction(Dave, ActionKind.Idle)
+                } else if (controller.dx() == 0 && (!(dave_facing_right) || button_released)) {
+                    animation.setAction(Dave, ActionKind.idle_left)
+                }
             }
         }
+    }
+    if (game.runtime() > firedNow + 1000) {
+        allowFiring = true
     }
 })
 game.onUpdateInterval(500, function () {
