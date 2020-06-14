@@ -3,7 +3,11 @@ enum ActionKind {
     Idle,
     Jumping,
     weedDance,
-    Walk_left
+    Walk_left,
+    anim_jetpk,
+    anim_jp_left,
+    Jump_left,
+    idle_left
 }
 namespace SpriteKind {
     export const Keys = SpriteKind.create()
@@ -344,57 +348,39 @@ namespace myTiles {
 . . . . . . . . . . . . . . . . 
 `
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
-    if (_1stOccurance == 0) {
-        _1stOccurance = 1
-        CurrentTime = game.runtime()
-        info.changeLifeBy(-1)
-        sprite.destroy(effects.disintegrate, 1000)
-        game.splash("Try Again")
-        jetpackON = false
-        CreateDave()
-    }
-})
-scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location) {
-    game.splash("Your Score:", convertToText(info.score()))
-    if (levelCount < MaxLevel) {
-        destroyLevel(levelCount)
-        Level_Loaded = false
-        levelCount += 1
-        createLevel(levelCount)
-    } else {
-        game.over(true)
-    }
-})
-function create_jetpack () {
-    for (let value of tiles.getTilesByType(myTiles.tile12)) {
-        if (!(has_jetpack)) {
-            jetpack = sprites.create(img`
+function create_Jetpack_Statusbar (maxfuel: number) {
+    Jet_fuel_status = statusbars.create(20, 5, StatusBarKind.jetpackStatus)
+    Jet_fuel_status.setColor(7, 2)
+    Jet_fuel_status.setBarBorder(1, 13)
+    Jet_fuel_status.setLabel("Jetpack")
+    Jet_fuel_status.positionDirection(CollisionDirection.Top)
+    Jet_fuel_status.max = maxfuel
+    Jet_fuel_status.value = jetpack_fuel_available
+}
+function create_Gun () {
+    for (let value10 of tiles.getTilesByType(myTiles.tile15)) {
+        if (!(has_gun)) {
+            theGun = sprites.create(img`
 . . . . . . . . . . . . . . . . 
-. . . . 7 7 7 7 7 7 7 7 . . . . 
-. . . 7 7 7 7 7 7 7 7 7 7 . . . 
-. . . 7 7 7 7 7 7 7 7 7 7 . . . 
-. . . 7 7 1 7 7 7 7 1 7 7 . . . 
-. . . 7 7 1 7 7 7 7 1 7 7 . . . 
-. . . 7 1 1 7 7 7 7 1 1 7 . . . 
-. . . 7 1 1 7 7 7 7 1 1 7 . . . 
-. . . 7 1 1 7 7 7 7 1 1 7 . . . 
-. . . 7 1 1 7 7 7 7 1 1 7 . . . 
-. . . 7 a 1 7 7 7 7 1 a 7 . . . 
-. . . 7 a 1 7 7 7 7 1 a 7 . . . 
-. . . a a 7 7 7 7 7 7 a a . . . 
-. . . 2 5 7 7 7 7 7 7 5 2 . . . 
-. . 2 2 2 2 . . . . 2 2 2 2 . . 
+. . 1 . . . . . . . . . . . . . 
+. 1 . . c b b b d d 1 1 1 1 d . 
+. . 1 c c b b b d d d d d d f . 
+. . b c c c c 1 1 1 1 1 1 . . . 
+. b c c f 1 . . . . . . . . . . 
+. b c f f . 1 . . . . . . . . . 
+. b c f . . . . . . . . . . . . 
+. c c c . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . 
-`, SpriteKind.Jetpacks)
-            tiles.placeOnTile(jetpack, value)
+. . . . . . . . . . . . . . . . 
+`, SpriteKind.Guns)
+            tiles.placeOnTile(theGun, value10)
         }
-        tiles.setTileAt(value, myTiles.tile0)
+        tiles.setTileAt(value10, myTiles.tile0)
     }
 }
 function create_Spidey () {
     cntr = 0
-    for (let value of tiles.getTilesByType(myTiles.tile16)) {
+    for (let value2 of tiles.getTilesByType(myTiles.tile16)) {
         if (SPIDEY_COUNT - kill_count > cntr) {
             Spiderrrr = sprites.create(img`
 . . . . . . c 2 . . . . . 2 c . . . . . . 
@@ -418,10 +404,10 @@ c . c 1 3 f 1 c c c c c c c 1 f 3 1 c . c
 1 c c . . . . . . . . . . . . . . . c c 1 
 . . . . . . . . . . . . . . . . . . . . . 
 `, SpriteKind.Spideees)
-            tiles.placeOnTile(Spiderrrr, value)
+            tiles.placeOnTile(Spiderrrr, value2)
             cntr += 1
         }
-        tiles.setTileAt(value, myTiles.tile0)
+        tiles.setTileAt(value2, myTiles.tile0)
         animation.runMovementAnimation(
         Spiderrrr,
         "c -200 50 300 10 0 0",
@@ -430,8 +416,30 @@ c . c 1 3 f 1 c c c c c c c 1 f 3 1 c . c
         )
     }
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
+    if (_1stOccurance == 0) {
+        _1stOccurance = 1
+        CurrentTime = game.runtime()
+        info.changeLifeBy(-1)
+        sprite.destroy(effects.disintegrate, 1000)
+        game.splash("Try Again")
+        jetpackON = false
+        CreateDave()
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location) {
+    game.splash("Your Score", convertToText(info.score()))
+    if (levelCount <= MaxLevel) {
+        destroyLevel(levelCount)
+        Level_Loaded = false
+        levelCount += 1
+        createLevel(levelCount)
+    } else {
+        game.over(true)
+    }
+})
 function addYellowGems () {
-    for (let value of tiles.getTilesByType(myTiles.tile5)) {
+    for (let value3 of tiles.getTilesByType(myTiles.tile5)) {
         Yellow_Gems = sprites.create(img`
 . . 5 5 5 5 5 5 5 5 5 . . 
 . . 5 5 5 5 5 5 1 5 5 . . 
@@ -444,8 +452,8 @@ function addYellowGems () {
 . . . . . 5 5 5 . . . . . 
 . . . . . . 5 . . . . . . 
 `, SpriteKind.yellowGems)
-        tiles.placeOnTile(Yellow_Gems, value)
-        tiles.setTileAt(value, myTiles.tile0)
+        tiles.placeOnTile(Yellow_Gems, value3)
+        tiles.setTileAt(value3, myTiles.tile0)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Keys, function (sprite, otherSprite) {
@@ -453,11 +461,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Keys, function (sprite, otherSpr
     game.splash("Now go thru the Door!!!")
     HaveKey = 1
     otherSprite.destroy()
-    for (let value2 of tiles.getTilesByType(myTiles.tile7)) {
-        tiles.setTileAt(value2, myTiles.tile0)
+    for (let value22 of tiles.getTilesByType(myTiles.tile7)) {
+        tiles.setTileAt(value22, myTiles.tile0)
     }
-    for (let value of tiles.getTilesByType(myTiles.tile8)) {
-        tiles.setTileAt(value, myTiles.tile9)
+    for (let value9 of tiles.getTilesByType(myTiles.tile8)) {
+        tiles.setTileAt(value9, myTiles.tile9)
     }
 })
 statusbars.onZero(StatusBarKind.jetpackStatus, function (status) {
@@ -466,6 +474,7 @@ statusbars.onZero(StatusBarKind.jetpackStatus, function (status) {
     has_jetpack = false
     JP_change = true
     Dave_flipped = false
+    JP_TurnedOFF = true
     controller.moveSprite(Dave, 100, 0)
 })
 function createLevel (level: number) {
@@ -1072,26 +1081,15 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Spideees, function (sprite, othe
     game.splash("Try Again")
     CreateDave()
 })
-function create_Jetpack_Statusbar (maxfuel: number) {
-    Jet_fuel_status = statusbars.create(20, 5, StatusBarKind.jetpackStatus)
-    Jet_fuel_status.setColor(7, 2)
-    Jet_fuel_status.setBarBorder(1, 13)
-    Jet_fuel_status.setLabel("Jetpack")
-    Jet_fuel_status.positionDirection(CollisionDirection.Top)
-    Jet_fuel_status.max = maxfuel
-    Jet_fuel_status.value = jetpack_fuel_available
-}
-controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    dave_facing_right = false
-    Dave_flipped = false
-})
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (has_jetpack) {
         if (jetpackON) {
             jetpackON = false
             controller.moveSprite(Dave, 100, 0)
             Dave.ay = GRAVITY
+            JP_TurnedOFF = true
         } else {
+            JP_TurnedOFF = false
             Jet_fuel_status.value = jetpack_fuel_available
             jetpackON = true
             Dave.ay = 0
@@ -1116,8 +1114,8 @@ function destroyLevel (LevelNum: number) {
         value6.destroy()
     }
     if (LevelNum == 3) {
-        for (let value6 of sprites.allOfKind(SpriteKind.Crownsss)) {
-            value6.destroy()
+        for (let value62 of sprites.allOfKind(SpriteKind.Crownsss)) {
+            value62.destroy()
         }
         for (let value7 of sprites.allOfKind(SpriteKind.Weeds)) {
             value7.destroy()
@@ -1147,6 +1145,9 @@ function createKey () {
 `, SpriteKind.Keys)
     tiles.placeOnRandomTile(MagicKey, myTiles.tile7)
 }
+controller.left.onEvent(ControllerButtonEvent.Released, function () {
+    anim_applied = false
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.yellowGems, function (sprite, otherSprite) {
     info.changeScoreBy(10)
     tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
@@ -1173,27 +1174,301 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Guns, function (sprite, otherSpr
     GunStatus.y = 10
     GunStatus.setFlag(SpriteFlag.RelativeToCamera, true)
 })
-function Fire_Bullet (direction: boolean) {
-    allowFiring = false
-    if (direction) {
-        bullet = sprites.createProjectileFromSprite(img`
-1 b b b b b b b b b b . . 
-c b b b 1 1 1 1 1 1 1 b . 
-c b c c c c c c c c c c c 
-c b f f f f f f c c c b . 
-1 b b b b b b b b b b . . 
-`, Dave, 200, 0)
-    } else {
-        bullet = sprites.createProjectileFromSprite(img`
-1 b b b b b b b b b b . . 
-c b b b 1 1 1 1 1 1 1 b . 
-c b c c c c c c c c c c c 
-c b f f f f f f c c c b . 
-1 b b b b b b b b b b . . 
-`, Dave, -200, 0)
-        bullet.image.flipX()
+function dave_animations () {
+    anim_left = animation.createAnimation(ActionKind.Walk_left, 200)
+    anim_left.addAnimationFrame(img`
+. . . . . 2 2 2 2 2 2 . . . . . 
+. . . 2 2 2 2 2 2 2 2 . . . . . 
+. . . . . d f d b b b . . . . . 
+. . . . d d d d b d b . . . . . 
+. . . . . . d d d d . . . . . . 
+. . . . . . 1 1 1 1 . . . . . . 
+. . . . . 1 d d 1 1 d . . . . . 
+. . . . d d d d 1 1 d d . . . . 
+. . . d d d 1 1 1 1 . d d . . . 
+. . . d d f f f f f . . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . 8 8 8 f 8 8 . . . . . . 
+. . . . 8 8 8 . f 8 8 . . . . . 
+. . . 8 8 8 . . . f 8 f 1 . . . 
+. . 1 f f . . . . . . f 1 . . . 
+. . 1 1 1 . . . . . . 1 1 . . . 
+`)
+    anim_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . . . . 1 1 1 1 . . . . . 
+. . . . . . 1 1 1 d d . . . . . 
+. . . . . . d 1 1 d d . . . . . 
+. . . . . . 1 1 d d d . . . . . 
+. . . . . . f d d d f . . . . . 
+. . . . . . 8 d d 8 8 . . . . . 
+. . . . . . 8 8 8 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . 1 f f 1 f f . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    anim_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . . d d 1 1 1 1 . . . . . 
+. . . . d d 1 1 1 d d . . . . . 
+. . . d d d 1 1 1 d d d . . . . 
+. . . d . . 1 1 1 1 d d d . . . 
+. . . . . . f f f f f . d . . . 
+. . . . . . 8 8 8 8 8 . . . . . 
+. . . . . 8 8 8 f 8 8 8 . . . . 
+. . . 1 . 8 8 f . . 8 8 . . . . 
+. . 1 f 8 8 f . . . . 8 8 . . . 
+. . 1 1 f . . . . . 1 f f . . . 
+. . . 1 1 . . . . . 1 1 1 . . . 
+`)
+    animation.attachAnimation(Dave, anim_left)
+    anim_right = animation.createAnimation(ActionKind.Walking, 200)
+    anim_right.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . . . . . . 
+. . . . d 1 1 d d 1 . . . . . . 
+. . . . d 1 1 d d d d . . . . . 
+. . . d d 1 1 1 1 d d d . . . . 
+. . . . . f f f f f d d . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 f 8 8 8 . . . . . 
+. . . . 8 8 f . 8 8 8 . . . . . 
+. . 1 f 8 f . . . 8 8 8 . . . . 
+. . 1 f . . . . . . f f 1 . . . 
+. . 1 1 . . . . . . 1 1 1 . . . 
+`)
+    anim_right.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . . . . . . 
+. . . . d d 1 1 1 1 . . . . . . 
+. . . . d d d 1 1 d . . . . . . 
+. . . . . d d d 1 1 d . . . . . 
+. . . . . f d d f f d . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . f f 1 f f 1 . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    anim_right.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 d d . . . . . 
+. . . . . d d 1 1 1 d d . . . . 
+. . . . d d d 1 1 1 d d d . . . 
+. . . d d d 1 1 1 1 . . d . . . 
+. . . d . f f f f f . . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . 8 8 8 f 8 8 8 . . . . . 
+. . . . 8 8 . . f 8 8 . 1 . . . 
+. . . 8 8 . . . . f 8 8 f 1 . . 
+. . . f f 1 . . . . . f 1 . . . 
+. . . 1 1 1 . . . . . 1 . . . . 
+`)
+    animation.attachAnimation(Dave, anim_right)
+    anim_idle = animation.createAnimation(ActionKind.Idle, 100)
+    anim_idle.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . . . . . . 
+. . . . d d 1 1 1 1 . . . . . . 
+. . . d d d 1 1 1 d . . . . . . 
+. . . d d 1 1 1 1 1 d . . . . . 
+. . d d . f f f f f d . . . . . 
+. . d d . 8 8 8 8 8 d . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . 8 8 c 8 8 . . . . . . 
+. . . . . f f 1 f f 1 . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_idle)
+    anim_idle_left = animation.createAnimation(ActionKind.idle_left, 100)
+    anim_idle_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . . . . 1 1 1 1 . . . . . 
+. . . . . . 1 1 1 1 d d . . . . 
+. . . . . . d 1 1 1 d d d . . . 
+. . . . . d 1 1 1 1 1 d d . . . 
+. . . . . d f f f f f . d d . . 
+. . . . . d 8 8 8 8 8 . d d . . 
+. . . . . . 8 8 8 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . . 8 8 c 8 8 . . . . . 
+. . . . . 1 f f 1 f f . . . . . 
+. . . . . 1 1 1 1 1 1 . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_idle_left)
+    anim_jetpk = animation.createAnimation(ActionKind.anim_jetpk, 100)
+    anim_jetpk.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . 7 7 . d d d d . . . . . . . 
+. . 7 7 7 1 1 1 1 . . . . . . . 
+. . 1 7 d d 1 1 1 1 . . . . . . 
+. . 1 7 d d 1 1 1 d . . . . . . 
+. . a 7 d d d 1 1 1 . . . . . . 
+. . a a 7 d d d f f . . . . . . 
+. 2 5 5 . 8 8 8 8 8 . . . . . . 
+. 2 5 2 . 8 8 8 8 8 8 8 8 . . . 
+. . 2 . . 8 8 8 8 f 8 8 8 . . . 
+. . . . . . . . 8 8 f 8 8 . . . 
+. . . . . . . . 8 8 1 8 8 1 . . 
+. . . . . . . . 1 1 1 1 1 1 . . 
+`)
+    anim_jetpk.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . 7 7 . d d d d . . . . . . . 
+. . 7 7 7 1 1 1 1 . . . . . . . 
+. . 1 7 d d 1 1 1 1 . . . . . . 
+. . 1 7 d d 1 1 1 d . . . . . . 
+. . a 7 d d d 1 1 1 . . . . . . 
+. . a a 7 d d d f f . . . . . . 
+. 2 4 4 . 8 8 8 8 8 . . . . . . 
+2 5 4 5 . 8 8 8 8 8 8 8 8 . . . 
+2 5 5 2 . 8 8 8 8 f 8 8 8 . . . 
+. 2 5 2 . . . . 8 8 f 8 8 . . . 
+. . 2 . . . . . 8 8 1 8 8 1 . . 
+. . . . . . . . 1 1 1 1 1 1 . . 
+`)
+    animation.attachAnimation(Dave, anim_jetpk)
+    anim_jetpk_left = animation.createAnimation(ActionKind.anim_jp_left, 100)
+    anim_jetpk_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . 7 7 . . 
+. . . . . . . 1 1 1 1 7 7 7 . . 
+. . . . . . 1 1 1 1 d d 7 1 . . 
+. . . . . . d 1 1 1 d d 7 1 . . 
+. . . . . . 1 1 1 d d d 7 a . . 
+. . . . . . f f d d d 7 a a . . 
+. . . . . . 8 8 8 8 8 . 5 5 2 . 
+. . . 8 8 8 8 8 8 8 8 . 2 5 2 . 
+. . . 8 8 8 f 8 8 8 8 . . 2 . . 
+. . . 8 8 f 8 8 . . . . . . . . 
+. . 1 8 8 1 8 8 . . . . . . . . 
+. . 1 1 1 1 1 1 . . . . . . . . 
+`)
+    anim_jetpk_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . 7 7 . . 
+. . . . . . . 1 1 1 1 7 7 7 . . 
+. . . . . . 1 1 1 1 d d 7 1 . . 
+. . . . . . d 1 1 1 d d 7 1 . . 
+. . . . . . 1 1 1 d d d 7 a . . 
+. . . . . . f f d d d 7 a a . . 
+. . . . . . 8 8 8 8 8 . 4 4 2 . 
+. . . 8 8 8 8 8 8 8 8 . 5 4 5 2 
+. . . 8 8 8 f 8 8 8 8 . 2 5 5 2 
+. . . 8 8 f 8 8 . . . . 2 5 2 . 
+. . 1 8 8 1 8 8 . . . . . 2 . . 
+. . 1 1 1 1 1 1 . . . . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_jetpk_left)
+    anim_jump = animation.createAnimation(ActionKind.Jumping, 200)
+    anim_jump.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . . . . d d d d . . . . . . . 
+. . . . . 1 1 1 1 . . d . . . . 
+. . . d d 1 1 d d 1 d d . . . . 
+. . d d d 1 1 d d d d d . . . . 
+. . d d . 1 1 1 1 d d . . . . . 
+. . . . . f f f f f . . . . . . 
+. . . . . 8 8 8 8 8 8 8 . . . . 
+. . 1 f 8 8 8 8 f 8 8 8 . . . . 
+. . 1 f 8 8 f . . . 8 8 . . . . 
+. . 1 1 . . . . . . f f 1 . . . 
+. . . . . . . . . . 1 1 1 . . . 
+. . . . . . . . . . . . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_jump)
+    anim_jump_left = animation.createAnimation(ActionKind.Jump_left, 200)
+    anim_jump_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . . . . . 
+. . . . d . . 1 1 1 1 . . . . . 
+. . . . d d 1 d d 1 1 d d . . . 
+. . . . d d d d d 1 1 d d d . . 
+. . . . . d d 1 1 1 1 . d d . . 
+. . . . . . . f f f f . . . . . 
+. . . . . 8 8 8 8 8 8 . . . . . 
+. . . . . 8 8 f 8 8 8 8 f 1 . . 
+. . . . . 8 8 . . f 8 8 f 1 . . 
+. . . . 1 f f . . . . . 1 1 . . 
+. . . . 1 1 1 . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+`)
+    animation.attachAnimation(Dave, anim_jump_left)
+}
+function create_jetpack () {
+    for (let value of tiles.getTilesByType(myTiles.tile12)) {
+        if (!(has_jetpack)) {
+            jetpack = sprites.create(img`
+. . . . . . . . . . . . . . . . 
+. . . . 7 7 7 7 7 7 7 7 . . . . 
+. . . 7 7 7 7 7 7 7 7 7 7 . . . 
+. . . 7 7 7 7 7 7 7 7 7 7 . . . 
+. . . 7 7 1 7 7 7 7 1 7 7 . . . 
+. . . 7 7 1 7 7 7 7 1 7 7 . . . 
+. . . 7 1 1 7 7 7 7 1 1 7 . . . 
+. . . 7 1 1 7 7 7 7 1 1 7 . . . 
+. . . 7 1 1 7 7 7 7 1 1 7 . . . 
+. . . 7 1 1 7 7 7 7 1 1 7 . . . 
+. . . 7 a 1 7 7 7 7 1 a 7 . . . 
+. . . 7 a 1 7 7 7 7 1 a 7 . . . 
+. . . a a 7 7 7 7 7 7 a a . . . 
+. . . 2 5 7 7 7 7 7 7 5 2 . . . 
+. . 2 2 2 2 . . . . 2 2 2 2 . . 
+. . . . . . . . . . . . . . . . 
+`, SpriteKind.Jetpacks)
+            tiles.placeOnTile(jetpack, value)
+        }
+        tiles.setTileAt(value, myTiles.tile0)
     }
-    firedNow = game.runtime()
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.BlueGems, function (sprite, otherSprite) {
     info.changeScoreBy(20)
@@ -1218,14 +1493,12 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava0, function (sp
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     dave_facing_right = true
     Dave_flipped = false
+    anim_applied = false
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Crownsss, function (sprite, otherSprite) {
     info.changeScoreBy(500)
     tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
     otherSprite.destroy()
-})
-scene.onOverlapTile(SpriteKind.Player, myTiles.tile8, function (sprite, location) {
-    game.splash("No Key Yet??? Go Find it!!!")
 })
 controller.up.onEvent(ControllerButtonEvent.Repeated, function () {
     if (jetpackON) {
@@ -1242,6 +1515,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Jetpacks, function (sprite, othe
     has_jetpack = true
     jetpack_fuel_available = JETPACK_MAX_FUEL
     create_Jetpack_Statusbar(JETPACK_MAX_FUEL)
+})
+controller.right.onEvent(ControllerButtonEvent.Released, function () {
+    anim_applied = false
 })
 function addBlueGems () {
     for (let value8 of tiles.getTilesByType(myTiles.tile6)) {
@@ -1262,7 +1538,7 @@ function addBlueGems () {
     }
 }
 function create_Crowns () {
-    for (let value of tiles.getTilesByType(myTiles.tile10)) {
+    for (let value4 of tiles.getTilesByType(myTiles.tile10)) {
         A_Crown = sprites.create(img`
 . . . . . . . 5 . . . . . . . 
 1 . . . . . 5 2 5 . . . . . 5 
@@ -1278,8 +1554,8 @@ function create_Crowns () {
 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 
 5 5 1 1 1 1 1 5 5 5 5 5 5 5 5 
 `, SpriteKind.Crownsss)
-        tiles.placeOnTile(A_Crown, value)
-        tiles.setTileAt(value, myTiles.tile0)
+        tiles.placeOnTile(A_Crown, value4)
+        tiles.setTileAt(value4, myTiles.tile0)
     }
 }
 function CreateDave () {
@@ -1302,7 +1578,7 @@ function CreateDave () {
 . . . . . 1 1 1 1 1 1 . . . . . 
 `, SpriteKind.Player)
     tiles.placeOnRandomTile(Dave, sprites.dungeon.doorClosedNorth)
-    controller.moveSprite(Dave, 100, 0)
+    controller.moveSprite(Dave, 80, 0)
     Dave.ay = GRAVITY
     Dave.z = 1
     scene.cameraFollowSprite(Dave)
@@ -1311,30 +1587,37 @@ function CreateDave () {
     DaveX = Dave.x
     DaveY = Dave.y
     dave_facing_right = true
+    dave_animations()
 }
-function create_Gun () {
-    for (let value of tiles.getTilesByType(myTiles.tile15)) {
-        if (!(has_gun)) {
-            theGun = sprites.create(img`
-. . . . . . . . . . . . . . . . 
-. . 1 . . . . . . . . . . . . . 
-. 1 . . c b b b d d 1 1 1 1 d . 
-. . 1 c c b b b d d d d d d f . 
-. . b c c c c 1 1 1 1 1 1 . . . 
-. b c c f 1 . . . . . . . . . . 
-. b c f f . 1 . . . . . . . . . 
-. b c f . . . . . . . . . . . . 
-. c c c . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . 
-`, SpriteKind.Guns)
-            tiles.placeOnTile(theGun, value)
-        }
-        tiles.setTileAt(value, myTiles.tile0)
+controller.left.onEvent(ControllerButtonEvent.Repeated, function () {
+    dave_facing_right = false
+    Dave_flipped = false
+    anim_applied = false
+})
+function Fire_Bullet (direction: boolean) {
+    allowFiring = false
+    if (direction) {
+        bullet = sprites.createProjectileFromSprite(img`
+1 b b b b b b b b b b . . 
+c b b b 1 1 1 1 1 1 1 b . 
+c b c c c c c c c c c c c 
+c b f f f f f f c c c b . 
+1 b b b b b b b b b b . . 
+`, Dave, 200, 0)
+    } else {
+        bullet = sprites.createProjectileFromSprite(img`
+1 b b b b b b b b b b . . 
+c b b b 1 1 1 1 1 1 1 b . 
+c b c c c c c c c c c c c 
+c b f f f f f f c c c b . 
+1 b b b b b b b b b b . . 
+`, Dave, -200, 0)
+        bullet.image.flipX()
     }
+    firedNow = game.runtime()
 }
 function create_seaweed () {
-    for (let value4 of tiles.getTilesByType(myTiles.tile14)) {
+    for (let value42 of tiles.getTilesByType(myTiles.tile14)) {
         Seaweed = sprites.create(img`
 . . . . 8 8 . . . . . . . . . . 
 . . . . 8 6 8 . . . . . . . . . 
@@ -1385,9 +1668,9 @@ function create_seaweed () {
 . . . . . . . . 8 7 6 7 6 8 . . 
 . . . . . . . . 8 7 6 8 8 . . . 
 `, SpriteKind.Weeds)
-        tiles.placeOnTile(Seaweed, value4)
+        tiles.placeOnTile(Seaweed, value42)
         Seaweed.y = Seaweed.y + 16
-        tiles.setTileAt(value4, myTiles.tile0)
+        tiles.setTileAt(value42, myTiles.tile0)
         animation.runImageAnimation(
         Seaweed,
         [img`
@@ -1494,37 +1777,48 @@ function create_seaweed () {
         )
     }
 }
+let button_released = false
 let Seaweed: Sprite = null
-let theGun: Sprite = null
+let firedNow = 0
+let bullet: Sprite = null
 let DaveY = 0
 let DaveX = 0
 let A_Crown: Sprite = null
 let Blue_Gems: Sprite = null
 let DaveMoved = false
-let firedNow = 0
-let bullet: Sprite = null
-let allowFiring = false
-let MagicKey: Sprite = null
 let dave_facing_right = false
-let jetpack_fuel_available = 0
-let Jet_fuel_status: StatusBarSprite = null
+let allowFiring = false
+let anim_jump_left: animation.Animation = null
+let anim_jump: animation.Animation = null
+let anim_jetpk_left: animation.Animation = null
+let anim_jetpk: animation.Animation = null
+let anim_idle_left: animation.Animation = null
+let anim_idle: animation.Animation = null
+let anim_right: animation.Animation = null
+let anim_left: animation.Animation = null
+let anim_applied = false
+let MagicKey: Sprite = null
 let GunStatus: Sprite = null
-let has_gun = false
+let jetpack: Sprite = null
 let JETPACK_MAX_FUEL = 0
+let JP_TurnedOFF = false
 let Dave_flipped = false
 let JP_change = false
+let has_jetpack = false
 let Dave: Sprite = null
 let HaveKey = 0
 let Yellow_Gems: Sprite = null
+let jetpackON = false
+let CurrentTime = 0
+let _1stOccurance = 0
 let Spiderrrr: Sprite = null
 let kill_count = 0
 let SPIDEY_COUNT = 0
 let cntr = 0
-let jetpack: Sprite = null
-let has_jetpack = false
-let jetpackON = false
-let CurrentTime = 0
-let _1stOccurance = 0
+let theGun: Sprite = null
+let has_gun = false
+let jetpack_fuel_available = 0
+let Jet_fuel_status: StatusBarSprite = null
 let Level_Loaded = false
 let MaxLevel = 0
 let respawn = false
@@ -1546,92 +1840,39 @@ createLevel(levelCount)
 game.showLongText("Dave Awesome!!!              -Arrows Move  -A for Fire    -B for Jetpack                                  Save the       WORLD !!!", DialogLayout.Center)
 game.splash("Collect Gems &", "Find the Key to the door")
 game.onUpdate(function () {
-    if (controller.anyButton.isPressed() || JP_change) {
-        if (!(dave_facing_right)) {
-            if (!(Dave_flipped)) {
-                if (jetpackON) {
-                    Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . 7 7 . d d d d . . . . . . . 
-. . 7 7 7 1 1 1 1 . . . . . . . 
-. . 1 7 d d 1 1 1 1 . . . . . . 
-. . 1 7 d d 1 1 1 d . . . . . . 
-. . a 7 d d d 1 1 1 . . . . . . 
-. . a a 7 d d d f f . . . . . . 
-. 2 5 5 . 8 8 8 8 8 . . . . . . 
-. 2 5 2 . 8 8 8 8 8 8 8 8 . . . 
-. . 2 . . 8 8 8 8 f 8 8 8 . . . 
-. . . . . . . . 8 8 f 8 8 . . . 
-. . . . . . . . 8 8 1 8 8 1 . . 
-. . . . . . . . 1 1 1 1 1 1 . . 
-`)
-                } else {
-                    Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . . . . d d d d . . . . . . . 
-. . . . . 1 1 1 1 . . . . . . . 
-. . . . d d 1 1 1 1 . . . . . . 
-. . . d d d 1 1 1 d . . . . . . 
-. . . d d 1 1 1 1 1 d . . . . . 
-. . d d . f f f f f d . . . . . 
-. . d d . 8 8 8 8 8 d . . . . . 
-. . . . . 8 8 8 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . f f 1 f f 1 . . . . . 
-. . . . . 1 1 1 1 1 1 . . . . . 
-`)
-                }
-                Dave.image.flipX()
-                Dave_flipped = true
+    if (controller.anyButton.isPressed() || JP_change && !(JP_TurnedOFF)) {
+        if (jetpackON) {
+            if (controller.dx() < 0 || !(dave_facing_right)) {
+                animation.setAction(Dave, ActionKind.anim_jp_left)
+            } else if (controller.dx() > 0 || dave_facing_right) {
+                animation.setAction(Dave, ActionKind.anim_jetpk)
             }
         } else {
-            if (jetpackON) {
-                Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . 7 7 . d d d d . . . . . . . 
-. . 7 7 7 1 1 1 1 . . . . . . . 
-. . 1 7 d d 1 1 1 1 . . . . . . 
-. . 1 7 d d 1 1 1 d . . . . . . 
-. . a 7 d d d 1 1 1 . . . . . . 
-. . a a 7 d d d f f . . . . . . 
-. 2 5 5 . 8 8 8 8 8 . . . . . . 
-. 2 5 2 . 8 8 8 8 8 8 8 8 . . . 
-. . 2 . . 8 8 8 8 f 8 8 8 . . . 
-. . . . . . . . 8 8 f 8 8 . . . 
-. . . . . . . . 8 8 1 8 8 1 . . 
-. . . . . . . . 1 1 1 1 1 1 . . 
-`)
-            } else {
-                Dave.setImage(img`
-. . . . 2 2 2 2 2 2 . . . . . . 
-. . . . 2 2 2 2 2 2 2 2 . . . . 
-. . . . b b b d f d . . . . . . 
-. . . . b d b d d d d . . . . . 
-. . . . . d d d d . . . . . . . 
-. . . . . 1 1 1 1 . . . . . . . 
-. . . . d d 1 1 1 1 . . . . . . 
-. . . d d d 1 1 1 d . . . . . . 
-. . . d d 1 1 1 1 1 d . . . . . 
-. . d d . f f f f f d . . . . . 
-. . d d . 8 8 8 8 8 d . . . . . 
-. . . . . 8 8 8 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . 8 8 c 8 8 . . . . . . 
-. . . . . f f 1 f f 1 . . . . . 
-. . . . . 1 1 1 1 1 1 . . . . . 
-`)
+            if (controller.dy() < 0 && (controller.dx() < 0 || !(dave_facing_right))) {
+                animation.setAction(Dave, ActionKind.Jump_left)
+            } else if (controller.dy() < 0 && (controller.dx() > 0 || dave_facing_right)) {
+                animation.setAction(Dave, ActionKind.Jumping)
+            } else if (Dave.vx < 0 && !(button_released)) {
+                animation.setAction(Dave, ActionKind.Walk_left)
+            } else if (Dave.vx > 0 && !(button_released)) {
+                animation.setAction(Dave, ActionKind.Walking)
             }
         }
+    } else {
+        if (dave_facing_right) {
+            animation.setAction(Dave, ActionKind.Idle)
+        } else if (!(dave_facing_right)) {
+            animation.setAction(Dave, ActionKind.idle_left)
+        }
+    }
+    anim_applied = true
+    if (game.runtime() > firedNow + 1000) {
+        allowFiring = true
+    }
+    if (controller.anyButton.isPressed()) {
+        button_released = false
+    } else {
+        button_released = true
     }
 })
 game.onUpdateInterval(500, function () {
