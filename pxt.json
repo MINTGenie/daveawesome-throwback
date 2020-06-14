@@ -1,5 +1,5 @@
 {
-    "name": "DaveAwesome_Fire_added",
+    "name": "DaveAwesome_StatsBar",
     "description": "",
     "dependencies": {
         "device": "*",
@@ -7,7 +7,8 @@
         "animation": "*",
         "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0",
         "tilemaps": "github:microsoft/pxt-tilemaps#v1.7.1",
-        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.2.8"
+        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.2.8",
+        "Color Fading": "github:jwunderl/pxt-color#v0.1.3"
     },
     "files": [
         "main.blocks",
