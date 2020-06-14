@@ -474,6 +474,7 @@ statusbars.onZero(StatusBarKind.jetpackStatus, function (status) {
     has_jetpack = false
     JP_change = true
     Dave_flipped = false
+    JP_TurnedOFF = true
     controller.moveSprite(Dave, 100, 0)
 })
 function createLevel (level: number) {
@@ -1086,7 +1087,9 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             jetpackON = false
             controller.moveSprite(Dave, 100, 0)
             Dave.ay = GRAVITY
+            JP_TurnedOFF = true
         } else {
+            JP_TurnedOFF = false
             Jet_fuel_status.value = jetpack_fuel_available
             jetpackON = true
             Dave.ay = 0
@@ -1180,9 +1183,9 @@ function dave_animations () {
 . . . . d d d d b d b . . . . . 
 . . . . . . d d d d . . . . . . 
 . . . . . . 1 1 1 1 . . . . . . 
-. . . . . 1 d d 1 1 . . . . . . 
-. . . . d d d d 1 1 . . . . . . 
-. . . d d d 1 1 1 1 . . . . . . 
+. . . . . 1 d d 1 1 d . . . . . 
+. . . . d d d d 1 1 d d . . . . 
+. . . d d d 1 1 1 1 . d d . . . 
 . . . d d f f f f f . . . . . . 
 . . . . . 8 8 8 8 8 . . . . . . 
 . . . . 8 8 8 f 8 8 . . . . . . 
@@ -1198,11 +1201,11 @@ function dave_animations () {
 . . . . . d d d d b d b . . . . 
 . . . . . . . d d d d . . . . . 
 . . . . . . . 1 1 1 1 . . . . . 
-. . . . . . 1 1 1 1 d d . . . . 
-. . . . . . d 1 1 1 d d d . . . 
-. . . . . d 1 1 1 1 1 d d . . . 
-. . . . . d f f f f f . d d . . 
-. . . . . d 8 8 8 8 8 . d d . . 
+. . . . . . 1 1 1 d d . . . . . 
+. . . . . . d 1 1 d d . . . . . 
+. . . . . . 1 1 d d d . . . . . 
+. . . . . . f d d d f . . . . . 
+. . . . . . 8 d d 8 8 . . . . . 
 . . . . . . 8 8 8 8 8 . . . . . 
 . . . . . . 8 8 c 8 8 . . . . . 
 . . . . . . 8 8 c 8 8 . . . . . 
@@ -1255,10 +1258,10 @@ function dave_animations () {
 . . . . . d d d d . . . . . . . 
 . . . . . 1 1 1 1 . . . . . . . 
 . . . . d d 1 1 1 1 . . . . . . 
-. . . d d d 1 1 1 d . . . . . . 
-. . . d d 1 1 1 1 1 d . . . . . 
-. . d d . f f f f f d . . . . . 
-. . d d . 8 8 8 8 8 d . . . . . 
+. . . . d d d 1 1 d . . . . . . 
+. . . . . d d d 1 1 d . . . . . 
+. . . . . f d d f f d . . . . . 
+. . . . . 8 8 8 8 8 . . . . . . 
 . . . . . 8 8 8 8 8 . . . . . . 
 . . . . . 8 8 c 8 8 . . . . . . 
 . . . . . 8 8 c 8 8 . . . . . . 
@@ -1343,6 +1346,24 @@ function dave_animations () {
 . . . . . . . . 8 8 1 8 8 1 . . 
 . . . . . . . . 1 1 1 1 1 1 . . 
 `)
+    anim_jetpk.addAnimationFrame(img`
+. . . . 2 2 2 2 2 2 . . . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . b b b d f d . . . . . . 
+. . . . b d b d d d d . . . . . 
+. . 7 7 . d d d d . . . . . . . 
+. . 7 7 7 1 1 1 1 . . . . . . . 
+. . 1 7 d d 1 1 1 1 . . . . . . 
+. . 1 7 d d 1 1 1 d . . . . . . 
+. . a 7 d d d 1 1 1 . . . . . . 
+. . a a 7 d d d f f . . . . . . 
+. 2 4 4 . 8 8 8 8 8 . . . . . . 
+2 5 4 5 . 8 8 8 8 8 8 8 8 . . . 
+2 5 5 2 . 8 8 8 8 f 8 8 8 . . . 
+. 2 5 2 . . . . 8 8 f 8 8 . . . 
+. . 2 . . . . . 8 8 1 8 8 1 . . 
+. . . . . . . . 1 1 1 1 1 1 . . 
+`)
     animation.attachAnimation(Dave, anim_jetpk)
     anim_jetpk_left = animation.createAnimation(ActionKind.anim_jp_left, 100)
     anim_jetpk_left.addAnimationFrame(img`
@@ -1363,6 +1384,24 @@ function dave_animations () {
 . . 1 8 8 1 8 8 . . . . . . . . 
 . . 1 1 1 1 1 1 . . . . . . . . 
 `)
+    anim_jetpk_left.addAnimationFrame(img`
+. . . . . . 2 2 2 2 2 2 . . . . 
+. . . . 2 2 2 2 2 2 2 2 . . . . 
+. . . . . . d f d b b b . . . . 
+. . . . . d d d d b d b . . . . 
+. . . . . . . d d d d . 7 7 . . 
+. . . . . . . 1 1 1 1 7 7 7 . . 
+. . . . . . 1 1 1 1 d d 7 1 . . 
+. . . . . . d 1 1 1 d d 7 1 . . 
+. . . . . . 1 1 1 d d d 7 a . . 
+. . . . . . f f d d d 7 a a . . 
+. . . . . . 8 8 8 8 8 . 4 4 2 . 
+. . . 8 8 8 8 8 8 8 8 . 5 4 5 2 
+. . . 8 8 8 f 8 8 8 8 . 2 5 5 2 
+. . . 8 8 f 8 8 . . . . 2 5 2 . 
+. . 1 8 8 1 8 8 . . . . . 2 . . 
+. . 1 1 1 1 1 1 . . . . . . . . 
+`)
     animation.attachAnimation(Dave, anim_jetpk_left)
     anim_jump = animation.createAnimation(ActionKind.Jumping, 200)
     anim_jump.addAnimationFrame(img`
@@ -1377,10 +1416,10 @@ function dave_animations () {
 . . d d . 1 1 1 1 d d . . . . . 
 . . . . . f f f f f . . . . . . 
 . . . . . 8 8 8 8 8 8 8 . . . . 
-. . . . . 8 8 8 f f 8 8 . . . . 
-. . 1 f 8 8 f . . . f 8 . . . . 
-. . 1 f 8 f . . . . f f 1 . . . 
-. . 1 1 . . . . . . 1 1 1 . . . 
+. . 1 f 8 8 8 8 f 8 8 8 . . . . 
+. . 1 f 8 8 f . . . 8 8 . . . . 
+. . 1 1 . . . . . . f f 1 . . . 
+. . . . . . . . . . 1 1 1 . . . 
 . . . . . . . . . . . . . . . . 
 `)
     animation.attachAnimation(Dave, anim_jump)
@@ -1397,10 +1436,10 @@ function dave_animations () {
 . . . . . d d 1 1 1 1 . d d . . 
 . . . . . . . f f f f . . . . . 
 . . . . . 8 8 8 8 8 8 . . . . . 
-. . . . . 8 8 f f 8 8 . . . . . 
-. . . . . 8 f . . f 8 8 f 1 . . 
-. . . . 1 f f . . . f 8 f 1 . . 
-. . . . 1 1 1 . . . . . 1 1 . . 
+. . . . . 8 8 f 8 8 8 8 f 1 . . 
+. . . . . 8 8 . . f 8 8 f 1 . . 
+. . . . 1 f f . . . . . 1 1 . . 
+. . . . 1 1 1 . . . . . . . . . 
 . . . . . . . . . . . . . . . . 
 `)
     animation.attachAnimation(Dave, anim_jump_left)
@@ -1738,7 +1777,6 @@ function create_seaweed () {
         )
     }
 }
-let _1stOccurance2 = 0
 let button_released = false
 let Seaweed: Sprite = null
 let firedNow = 0
@@ -1763,6 +1801,7 @@ let MagicKey: Sprite = null
 let GunStatus: Sprite = null
 let jetpack: Sprite = null
 let JETPACK_MAX_FUEL = 0
+let JP_TurnedOFF = false
 let Dave_flipped = false
 let JP_change = false
 let has_jetpack = false
@@ -1801,11 +1840,11 @@ createLevel(levelCount)
 game.showLongText("Dave Awesome!!!              -Arrows Move  -A for Fire    -B for Jetpack                                  Save the       WORLD !!!", DialogLayout.Center)
 game.splash("Collect Gems &", "Find the Key to the door")
 game.onUpdate(function () {
-    if (controller.anyButton.isPressed() || JP_change) {
+    if (controller.anyButton.isPressed() || JP_change && !(JP_TurnedOFF)) {
         if (jetpackON) {
-            if (controller.dx() < 0) {
+            if (controller.dx() < 0 || !(dave_facing_right)) {
                 animation.setAction(Dave, ActionKind.anim_jp_left)
-            } else {
+            } else if (controller.dx() > 0 || dave_facing_right) {
                 animation.setAction(Dave, ActionKind.anim_jetpk)
             }
         } else {
@@ -1817,14 +1856,12 @@ game.onUpdate(function () {
                 animation.setAction(Dave, ActionKind.Walk_left)
             } else if (Dave.vx > 0 && !(button_released)) {
                 animation.setAction(Dave, ActionKind.Walking)
-            } else {
-                _1stOccurance2 = 0
             }
         }
     } else {
-        if (Dave.vx == 0 && dave_facing_right) {
+        if (dave_facing_right) {
             animation.setAction(Dave, ActionKind.Idle)
-        } else if (Dave.vx == 0 && !(dave_facing_right)) {
+        } else if (!(dave_facing_right)) {
             animation.setAction(Dave, ActionKind.idle_left)
         }
     }
