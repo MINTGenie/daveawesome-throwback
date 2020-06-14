@@ -7,7 +7,8 @@ enum ActionKind {
     anim_jetpk,
     anim_jp_left,
     Jump_left,
-    idle_left
+    idle_left,
+    Fire_Burning
 }
 namespace SpriteKind {
     export const Keys = SpriteKind.create()
@@ -19,6 +20,7 @@ namespace SpriteKind {
     export const GunPresence = SpriteKind.create()
     export const Spideees = SpriteKind.create()
     export const Crownsss = SpriteKind.create()
+    export const BunchaFire = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const jetpackStatus = StatusBarKind.create()
@@ -939,6 +941,7 @@ f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
         create_Gun()
         SPIDEY_COUNT = 2
         create_Spidey()
+        create_Fire()
     } else if (level == 4) {
         if (has_jetpack) {
             jetpack.destroy()
@@ -1072,6 +1075,75 @@ c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c 
     respawn = false
     Level_Loaded = true
 }
+function create_Fire () {
+    fire_anim = animation.createAnimation(ActionKind.Fire_Burning, 500)
+    fire_anim.addAnimationFrame(img`
+. . . 2 . . 5 2 5 . . . 2 . . 
+. 5 . . . 5 2 2 2 5 . 5 . 5 . 
+. . . 2 5 2 2 2 2 2 5 . . . . 
+. . . 5 2 2 2 2 2 2 2 5 5 5 2 
+. 2 5 5 2 4 4 2 4 4 2 5 5 2 5 
+. . 2 2 2 4 4 8 4 4 2 5 2 2 5 
+. 4 . 2 2 4 8 8 8 4 2 2 2 2 5 
+. . 5 5 2 4 8 8 8 4 2 2 5 5 . 
+. 5 5 5 2 4 4 8 4 4 2 5 5 . . 
+. . 5 4 5 2 2 4 2 2 5 5 . . . 
+. . . 5 5 5 5 2 5 5 5 4 . . . 
+. . . . . 5 5 5 5 5 5 . . . . 
+. . . . . e 5 5 5 e . . . . . 
+`)
+    fire_anim.addAnimationFrame(img`
+. . . . . . . 5 . . 2 . . 4 . 
+. 5 . . 2 . 5 2 5 . . . 4 . 2 
+4 . . . . 5 2 2 2 5 . . 5 . . 
+. 2 . . 5 2 2 2 5 2 5 . . . . 
+. . . 5 2 8 4 2 2 2 2 5 . 2 . 
+. 5 . 5 2 4 8 4 4 2 2 5 . . . 
+. . 4 5 2 4 4 8 8 4 2 5 4 . . 
+. 2 . 5 2 5 8 4 8 2 2 5 . . . 
+. 2 2 5 2 4 4 8 4 4 2 2 . . . 
+. . . . 5 2 2 4 2 2 5 5 . . . 
+. . 2 2 . 5 5 2 5 5 2 5 . . . 
+. . . . 2 . 2 5 5 2 5 . . . . 
+. . . . . e e 5 e 5 . . . . . 
+`)
+    fire_anim.addAnimationFrame(img`
+. . . 2 . . 5 2 5 . . . 2 . . 
+. 5 . . . 5 2 2 2 5 . 5 . 5 . 
+. . . 2 5 2 2 2 2 2 5 . . . . 
+. . 2 5 2 2 2 2 2 2 2 5 4 . 2 
+. 5 . 5 2 4 4 2 4 4 2 5 . 5 . 
+. . . 5 2 4 4 8 4 4 2 5 . . . 
+. 4 . 5 2 4 8 8 8 4 2 5 2 . . 
+. . 5 5 2 4 8 8 8 4 2 5 . . . 
+. . . 5 2 4 4 8 4 4 2 5 . . . 
+. . . 4 5 2 2 4 2 2 5 . . . . 
+. . . . . 5 5 2 5 5 . 4 . . . 
+. . . . . . 2 f 2 . . . . . . 
+. . . . . e e f e e . . . . . 
+`)
+    for (let value4 of tiles.getTilesByType(myTiles.tile13)) {
+        Firepit = sprites.create(img`
+. . . 2 . . 5 2 5 . . . 2 . . 
+. 5 . . . 5 2 2 2 5 . 5 . 5 . 
+. . . 2 5 2 2 2 2 2 5 . . . . 
+. . 2 5 2 2 2 2 2 2 2 5 4 . 2 
+. 5 . 5 2 4 4 2 4 4 2 5 . 5 . 
+. . . 5 2 4 4 8 4 4 2 5 . . . 
+. 4 . 5 2 4 8 8 8 4 2 5 2 . . 
+. . 5 5 2 4 8 8 8 4 2 5 . . . 
+. . . 5 2 4 4 8 4 4 2 5 . . . 
+. . . 4 5 2 2 4 2 2 5 . . . . 
+. . . . . 5 5 2 5 5 . 4 . . . 
+. . . . . . 2 f 2 . . . . . . 
+. . . . . e e f e e . . . . . 
+`, SpriteKind.BunchaFire)
+        tiles.placeOnTile(Firepit, value4)
+        animation.attachAnimation(Firepit, fire_anim)
+        tiles.setTileAt(value4, myTiles.tile0)
+        animation.setAction(Firepit, ActionKind.Fire_Burning)
+    }
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Spideees, function (sprite, otherSprite) {
     info.changeScoreBy(300)
     otherSprite.destroy()
@@ -1080,6 +1152,26 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Spideees, function (sprite, othe
     sprite.destroy(effects.disintegrate, 100)
     game.splash("Try Again")
     CreateDave()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.BunchaFire, function (sprite, otherSprite) {
+    if (_1stOccurance == 0) {
+        _1stOccurance = 1
+        CurrentTime = game.runtime()
+        info.changeLifeBy(-1)
+        sprite.destroy()
+        game.splash("Try Again")
+        if (has_jetpack) {
+            jetpackON = false
+            JP_TurnedOFF = false
+            JP_change = false
+        }
+        CreateDave()
+    }
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Dave.vy == 0 && !(jetpackON)) {
+        scene.centerCameraAt(Dave.x, Dave.y + 50)
+    }
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (has_jetpack) {
@@ -1147,6 +1239,11 @@ function createKey () {
 }
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
     anim_applied = false
+})
+controller.down.onEvent(ControllerButtonEvent.Released, function () {
+    if (Dave.vy == 0 && !(jetpackON)) {
+        scene.cameraFollowSprite(Dave)
+    }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.yellowGems, function (sprite, otherSprite) {
     info.changeScoreBy(10)
@@ -1798,6 +1895,8 @@ let anim_right: animation.Animation = null
 let anim_left: animation.Animation = null
 let anim_applied = false
 let MagicKey: Sprite = null
+let Firepit: Sprite = null
+let fire_anim: animation.Animation = null
 let GunStatus: Sprite = null
 let jetpack: Sprite = null
 let JETPACK_MAX_FUEL = 0
