@@ -393,115 +393,6 @@ namespace myTiles {
 . . . . . . . . . . . . . . . . 
 `
 }
-function create_Jetpack_Statusbar (maxfuel: number) {
-    Jet_fuel_status = statusbars.create(35, 8, StatusBarKind.jetpackStatus)
-    Jet_fuel_status.setColor(2, 15)
-    Jet_fuel_status.setBarBorder(2, 13)
-    Jet_fuel_status.setLabel("Jetpack")
-    Jet_fuel_status.max = maxfuel
-    Jet_fuel_status.value = jetpack_fuel_available
-    Jet_fuel_status.positionDirection(CollisionDirection.Bottom)
-    Jet_fuel_status.z = 150
-}
-function create_Gun () {
-    for (let value10 of tiles.getTilesByType(myTiles.tile15)) {
-        if (!(has_gun)) {
-            theGun = sprites.create(img`
-. . . . . . . . . . . . . . . . 
-. . 1 . . . . . . . . . . . . . 
-. 1 . . c b b b d d 1 1 1 1 d . 
-. . 1 c c b b b d d d d d d f . 
-. . b c c c c 1 1 1 1 1 1 . . . 
-. b c c f 1 . . . . . . . . . . 
-. b c f f . 1 . . . . . . . . . 
-. b c f . . . . . . . . . . . . 
-. c c c . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . 
-`, SpriteKind.Guns)
-            tiles.placeOnTile(theGun, value10)
-        }
-        tiles.setTileAt(value10, myTiles.tile0)
-    }
-}
-function create_Spidey () {
-    cntr = 0
-    for (let value2 of tiles.getTilesByType(myTiles.tile16)) {
-        if (SPIDEY_COUNT - kill_count > cntr) {
-            Spiderrrr = sprites.create(img`
-. . . . . . c 2 . . . . . 2 c . . . . . . 
-. . . . . . . c 2 c c c 2 c . . . . . . . 
-. 1 c 1 . c c 1 b b 3 b b 1 c c . . 1 c . 
-1 c . c c b 3 3 b c c c b 3 3 b c 1 c 1 c 
-. . . . 1 3 c c c c c c c c c 3 1 c . . 1 
-. . . 1 c b c c c c c c b a c b c f . . . 
-. 1 . c 3 c b a a c c c a 2 a c 3 c . 1 . 
-1 c 1 c 3 c a 2 a c c c b a a c 3 c 1 c 1 
-c . c 1 f c c a b c c c c c c c f 1 c . c 
-. . . c 3 c c c c c c c c c c c 3 c . . . 
-. . . c 3 c c c c c c c c c c c 3 c . . . 
-. 1 . f c c c f c f 1 f c f c c c f . 1 . 
-1 c 1 c 3 c f 1 f 1 f 1 f 1 f c 3 c 1 c 1 
-c . c 1 3 f 1 c c c c c c c 1 f 3 1 c . c 
-. . . f b 3 c b b f b f b b c 3 b c . . . 
-. . . . c b b 3 3 b 3 b 3 3 b b c . . . . 
-. . 1 c c f f f f f f f f f f f c c 1 . . 
-. 1 c 1 . . . . . . . . . . . . . 1 c 1 . 
-1 c c . . . . . . . . . . . . . . . c c 1 
-. . . . . . . . . . . . . . . . . . . . . 
-`, SpriteKind.Spideees)
-            tiles.placeOnTile(Spiderrrr, value2)
-            cntr += 1
-        }
-        tiles.setTileAt(value2, myTiles.tile0)
-        animation.runMovementAnimation(
-        Spiderrrr,
-        "c -200 50 300 10 0 0",
-        2000,
-        true
-        )
-    }
-}
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
-    if (_1stOccurance == 0) {
-        _1stOccurance = 1
-        CurrentTime = game.runtime()
-        info.changeLifeBy(-1)
-        sprite.destroy(effects.disintegrate, 1000)
-        game.splash("Try Again")
-        jetpackON = false
-        CreateDave()
-    }
-})
-scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location) {
-    game.splash("Your Score", convertToText(info.score()))
-    if (levelCount <= MaxLevel) {
-        destroyLevel(levelCount)
-        Level_Loaded = false
-        levelCount += 1
-        createLevel(levelCount)
-    } else {
-        game.over(true)
-    }
-})
-function addYellowGems () {
-    for (let value3 of tiles.getTilesByType(myTiles.tile5)) {
-        Yellow_Gems = sprites.create(img`
-. . 5 5 5 5 5 5 5 5 5 . . 
-. . 5 5 5 5 5 5 1 5 5 . . 
-. 5 5 5 5 5 5 5 5 1 5 5 . 
-5 5 5 5 5 5 5 5 5 5 1 5 5 
-. 5 5 5 5 5 5 5 5 1 5 5 . 
-. . 5 5 5 5 5 5 1 1 5 . . 
-. . . 5 5 5 5 1 1 5 . . . 
-. . . . 5 5 5 1 5 . . . . 
-. . . . . 5 5 5 . . . . . 
-. . . . . . 5 . . . . . . 
-`, SpriteKind.yellowGems)
-        tiles.placeOnTile(Yellow_Gems, value3)
-        tiles.setTileAt(value3, myTiles.tile0)
-    }
-}
 function initScores () {
     score_display_array = sprites.allOfKind(SpriteKind.score_kind)
     score_val_copy = info.score()
@@ -543,6 +434,131 @@ function initScores () {
         score_display_array[index] = score_sprite
         score_display_array[index].top = scene.cameraTop()
         score_display_array[index].left = GameStats.left + 47 - 5 * index
+    }
+}
+function create_Jetpack_Statusbar (maxfuel: number) {
+    Jet_fuel_status = statusbars.create(35, 8, StatusBarKind.jetpackStatus)
+    Jet_fuel_status.setColor(2, 15)
+    Jet_fuel_status.setBarBorder(2, 13)
+    Jet_fuel_status.setLabel("Jetpack")
+    Jet_fuel_status.max = maxfuel
+    Jet_fuel_status.value = jetpack_fuel_available
+    Jet_fuel_status.positionDirection(CollisionDirection.Bottom)
+    Jet_fuel_status.z = 150
+}
+function create_Gun () {
+    for (let value10 of tiles.getTilesByType(myTiles.tile15)) {
+        if (!(has_gun)) {
+            theGun = sprites.create(img`
+. . . . . . . . . . . . . . . . 
+. . 1 . . . . . . . . . . . . . 
+. 1 . . c b b b d d 1 1 1 1 d . 
+. . 1 c c b b b d d d d d d f . 
+. . b c c c c 1 1 1 1 1 1 . . . 
+. b c c f 1 . . . . . . . . . . 
+. b c f f . 1 . . . . . . . . . 
+. b c f . . . . . . . . . . . . 
+. c c c . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+`, SpriteKind.Guns)
+            tiles.placeOnTile(theGun, value10)
+        }
+        tiles.setTileAt(value10, myTiles.tile0)
+    }
+}
+function create_Spidey () {
+    cntr = 0
+    spidey_list = sprites.allOfKind(SpriteKind.Spideees)
+    for (let value2 of tiles.getTilesByType(myTiles.tile16)) {
+        if (SPIDEY_COUNT - kill_count > cntr) {
+            Spiderrrr = sprites.create(img`
+. . . . . . c 2 . . . . . 2 c . . . . . . 
+. . . . . . . c 2 c c c 2 c . . . . . . . 
+. 1 c 1 . c c 1 b b 3 b b 1 c c . . 1 c . 
+1 c . c c b 3 3 b c c c b 3 3 b c 1 c 1 c 
+. . . . 1 3 c c c c c c c c c 3 1 c . . 1 
+. . . 1 c b c c c c c c b a c b c f . . . 
+. 1 . c 3 c b a a c c c a 2 a c 3 c . 1 . 
+1 c 1 c 3 c a 2 a c c c b a a c 3 c 1 c 1 
+c . c 1 f c c a b c c c c c c c f 1 c . c 
+. . . c 3 c c c c c c c c c c c 3 c . . . 
+. . . c 3 c c c c c c c c c c c 3 c . . . 
+. 1 . f c c c f c f 1 f c f c c c f . 1 . 
+1 c 1 c 3 c f 1 f 1 f 1 f 1 f c 3 c 1 c 1 
+c . c 1 3 f 1 c c c c c c c 1 f 3 1 c . c 
+. . . f b 3 c b b f b f b b c 3 b c . . . 
+. . . . c b b 3 3 b 3 b 3 3 b b c . . . . 
+. . 1 c c f f f f f f f f f f f c c 1 . . 
+. 1 c 1 . . . . . . . . . . . . . 1 c 1 . 
+1 c c . . . . . . . . . . . . . . . c c 1 
+. . . . . . . . . . . . . . . . . . . . . 
+`, SpriteKind.Spideees)
+            tiles.placeOnTile(Spiderrrr, value2)
+            spidey_list[cntr] = Spiderrrr
+            cntr += 1
+        }
+        tiles.setTileAt(value2, myTiles.tile0)
+        animation.runMovementAnimation(
+        Spiderrrr,
+        "c -200 50 300 10 0 0",
+        2000,
+        true
+        )
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
+    if (_1stOccurance == 0) {
+        _1stOccurance = 1
+        CurrentTime = game.runtime()
+        info.changeLifeBy(-1)
+        sprite.destroy(effects.disintegrate, 1000)
+        game.splash("Try Again")
+        jetpackON = false
+        CreateDave()
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location) {
+    game.splash("Your Score", convertToText(info.score()))
+    if (levelCount <= MaxLevel) {
+        destroyLevel(levelCount)
+        Level_Loaded = false
+        levelCount += 1
+        createLevel(levelCount)
+    } else {
+        game.over(true)
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, img`
+. . 2 2 . . . . . . . . 
+. 2 5 5 2 2 . 2 . . . . 
+2 5 4 4 5 5 2 5 2 5 2 2 
+2 5 4 4 5 2 5 5 2 2 . . 
+. 2 5 5 2 2 . 2 . . . . 
+. . 2 2 . . . . . . . . 
+`, function (sprite, location) {
+    spidrr_fire.destroy()
+    info.changeLifeBy(-1)
+    sprite.destroy(effects.disintegrate, 1000)
+    game.splash("Try Again")
+    CreateDave()
+})
+function addYellowGems () {
+    for (let value3 of tiles.getTilesByType(myTiles.tile5)) {
+        Yellow_Gems = sprites.create(img`
+. . 5 5 5 5 5 5 5 5 5 . . 
+. . 5 5 5 5 5 5 1 5 5 . . 
+. 5 5 5 5 5 5 5 5 1 5 5 . 
+5 5 5 5 5 5 5 5 5 5 1 5 5 
+. 5 5 5 5 5 5 5 5 1 5 5 . 
+. . 5 5 5 5 5 5 1 1 5 . . 
+. . . 5 5 5 5 1 1 5 . . . 
+. . . . 5 5 5 1 5 . . . . 
+. . . . . 5 5 5 . . . . . 
+. . . . . . 5 . . . . . . 
+`, SpriteKind.yellowGems)
+        tiles.placeOnTile(Yellow_Gems, value3)
+        tiles.setTileAt(value3, myTiles.tile0)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Keys, function (sprite, otherSprite) {
@@ -2169,22 +2185,24 @@ let JP_change = false
 let has_jetpack = false
 let Dave: Sprite = null
 let HaveKey = 0
-let GameStats: Sprite = null
-let score_sprite: Sprite = null
-let score_val_copy = 0
-let score_display_array: Sprite[] = []
 let Yellow_Gems: Sprite = null
+let spidrr_fire: Sprite = null
 let jetpackON = false
 let CurrentTime = 0
 let _1stOccurance = 0
 let Spiderrrr: Sprite = null
 let kill_count = 0
 let SPIDEY_COUNT = 0
+let spidey_list: Sprite[] = []
 let cntr = 0
 let theGun: Sprite = null
 let has_gun = false
 let jetpack_fuel_available = 0
 let Jet_fuel_status: StatusBarSprite = null
+let GameStats: Sprite = null
+let score_sprite: Sprite = null
+let score_val_copy = 0
+let score_display_array: Sprite[] = []
 let max_digits_in_score = 0
 let display_level_number: Image[] = []
 let Level_Loaded = false
@@ -2197,7 +2215,7 @@ controller.configureRepeatEventDefaults(0, 100)
 let MAX_LIVES = 3
 info.setScore(0)
 info.setLife(MAX_LIVES)
-levelCount = 1
+levelCount = 3
 respawn = false
 MaxLevel = 3
 let Lvl_1_Features = ["Yellow Gems", "Blue Gems"]
@@ -2354,6 +2372,21 @@ initScores()
 max_digits_in_score = 5
 game.showLongText("Dave Awesome!!!              -Arrows Move  -A for Fire    -B for Jetpack                                  Save the       WORLD !!!", DialogLayout.Center)
 game.splash("Collect Gems &", "Find the Key to the door")
+game.onUpdateInterval(2000, function () {
+    if (levelCount == 3) {
+        for (let value of spidey_list) {
+            spidrr_fire = sprites.createProjectileFromSprite(img`
+. . 2 2 . . . . . . . . 
+. 2 5 5 2 2 . 2 . . . . 
+2 5 4 4 5 5 2 5 2 5 2 2 
+2 5 4 4 5 2 5 5 2 2 . . 
+. 2 5 5 2 2 . 2 . . . . 
+. . 2 2 . . . . . . . . 
+`, value, -140, 0)
+            spidrr_fire.startEffect(effects.trail)
+        }
+    }
+})
 game.onUpdate(function () {
     GameStats.top = scene.cameraTop()
     level_num_sprite.setImage(display_level_number[levelCount - 0])
