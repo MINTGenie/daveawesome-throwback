@@ -492,7 +492,7 @@ d . c c b f b b b f b c c c d .
         tiles.placeOnTile(Spiderrr, value10)
         animation.runMovementAnimation(
         Spiderrr,
-        "c -200 30 300 10 0 0",
+        "c -140 30 300 10 0 0",
         2000,
         true
         )
@@ -1595,6 +1595,13 @@ function create_jetpack () {
         tiles.setTileAt(value, myTiles.tile0)
     }
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    info.changeLifeBy(-1)
+    sprite.destroy(effects.disintegrate, 1000)
+    game.splash("Try Again")
+    CreateDave()
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.BlueGems, function (sprite, otherSprite) {
     info.changeScoreBy(20)
     tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
@@ -1944,13 +1951,6 @@ controller.left.onEvent(ControllerButtonEvent.Repeated, function () {
     dave_facing_right = false
     Dave_flipped = false
     anim_applied = false
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Spidey_attack, function (sprite, otherSprite) {
-    otherSprite.destroy()
-    info.changeLifeBy(-1)
-    sprite.destroy(effects.disintegrate, 1000)
-    game.splash("Try Again")
-    CreateDave()
 })
 function Fire_Bullet (direction: boolean) {
     allowFiring = false
@@ -2360,21 +2360,15 @@ game.onUpdateInterval(2600, function () {
     if (levelCount == 3) {
         if (Math.percentChance(75)) {
             for (let value of sprites.allOfKind(SpriteKind.Spideees)) {
-                spidrr_fire = sprites.create(img`
+                spidrr_fire = sprites.createProjectileFromSprite(img`
 . . 2 2 . . . . . . . . 
 . 2 5 5 2 2 . 2 . . . . 
 2 5 4 4 5 5 2 5 2 5 2 2 
 2 5 4 4 5 2 5 5 2 2 . . 
 . 2 5 5 2 2 . 2 . . . . 
 . . 2 2 . . . . . . . . 
-`, SpriteKind.Spidey_attack)
-                spidrr_fire.setPosition(value.x, value.y)
-                spidrr_fire.vx = -140
-                spidrr_fire.setFlag(SpriteFlag.StayInScreen, true)
+`, value, -180, 0)
                 spidrr_fire.startEffect(effects.trail)
-                if (true) {
-                	
-                }
             }
         }
     }
