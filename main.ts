@@ -25,6 +25,7 @@ namespace SpriteKind {
     export const lifes = SpriteKind.create()
     export const lvl_number_kind_sprite = SpriteKind.create()
     export const score_kind = SpriteKind.create()
+    export const Spidey_attack = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const jetpackStatus = StatusBarKind.create()
@@ -469,42 +470,33 @@ function create_Gun () {
 }
 function create_Spidey () {
     cntr = 0
-    spidey_list = sprites.allOfKind(SpriteKind.Spideees)
-    for (let value2 of tiles.getTilesByType(myTiles.tile16)) {
-        if (SPIDEY_COUNT - kill_count > cntr) {
-            Spiderrrr = sprites.create(img`
-. . . . . . c 2 . . . . . 2 c . . . . . . 
-. . . . . . . c 2 c c c 2 c . . . . . . . 
-. 1 c 1 . c c 1 b b 3 b b 1 c c . . 1 c . 
-1 c . c c b 3 3 b c c c b 3 3 b c 1 c 1 c 
-. . . . 1 3 c c c c c c c c c 3 1 c . . 1 
-. . . 1 c b c c c c c c b a c b c f . . . 
-. 1 . c 3 c b a a c c c a 2 a c 3 c . 1 . 
-1 c 1 c 3 c a 2 a c c c b a a c 3 c 1 c 1 
-c . c 1 f c c a b c c c c c c c f 1 c . c 
-. . . c 3 c c c c c c c c c c c 3 c . . . 
-. . . c 3 c c c c c c c c c c c 3 c . . . 
-. 1 . f c c c f c f 1 f c f c c c f . 1 . 
-1 c 1 c 3 c f 1 f 1 f 1 f 1 f c 3 c 1 c 1 
-c . c 1 3 f 1 c c c c c c c 1 f 3 1 c . c 
-. . . f b 3 c b b f b f b b c 3 b c . . . 
-. . . . c b b 3 3 b 3 b 3 3 b b c . . . . 
-. . 1 c c f f f f f f f f f f f c c 1 . . 
-. 1 c 1 . . . . . . . . . . . . . 1 c 1 . 
-1 c c . . . . . . . . . . . . . . . c c 1 
-. . . . . . . . . . . . . . . . . . . . . 
+    for (let value10 of tiles.getTilesByType(myTiles.tile16)) {
+        Spiderrr = sprites.create(img`
+. . . . . . . . . . . . . . . . 
+. . . . c d . . . . . c c . . . 
+. . . c . c d . . . c d . c . . 
+. . . . . . c . . c d . . . d . 
+. d c c . . c b b c . . d c c d 
+d c d . c b b b b b b b c . . c 
+. c . b b a a b b a a b b . d . 
+. . . c b a 2 b b 2 a b c c c d 
+d c c b b b b b b b b b c . d c 
+c . . b f b f b f b f b b d . . 
+d . c c b f b b b f b c c c d . 
+. c . . . b b b b b . . . . c . 
+. d c d . . . . . . . . . . d . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
 `, SpriteKind.Spideees)
-            tiles.placeOnTile(Spiderrrr, value2)
-            spidey_list[cntr] = Spiderrrr
-            cntr += 1
-        }
-        tiles.setTileAt(value2, myTiles.tile0)
+        tiles.placeOnTile(Spiderrr, value10)
         animation.runMovementAnimation(
-        Spiderrrr,
-        "c -200 50 300 10 0 0",
+        Spiderrr,
+        "c -200 30 300 10 0 0",
         2000,
         true
         )
+        tiles.setTileAt(value10, myTiles.tile0)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
@@ -528,20 +520,6 @@ scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location
     } else {
         game.over(true)
     }
-})
-scene.onOverlapTile(SpriteKind.Player, img`
-. . 2 2 . . . . . . . . 
-. 2 5 5 2 2 . 2 . . . . 
-2 5 4 4 5 5 2 5 2 5 2 2 
-2 5 4 4 5 2 5 5 2 2 . . 
-. 2 5 5 2 2 . 2 . . . . 
-. . 2 2 . . . . . . . . 
-`, function (sprite, location) {
-    spidrr_fire.destroy()
-    info.changeLifeBy(-1)
-    sprite.destroy(effects.disintegrate, 1000)
-    game.splash("Try Again")
-    CreateDave()
 })
 function addYellowGems () {
     for (let value3 of tiles.getTilesByType(myTiles.tile5)) {
@@ -1967,6 +1945,13 @@ controller.left.onEvent(ControllerButtonEvent.Repeated, function () {
     Dave_flipped = false
     anim_applied = false
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Spidey_attack, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    info.changeLifeBy(-1)
+    sprite.destroy(effects.disintegrate, 1000)
+    game.splash("Try Again")
+    CreateDave()
+})
 function Fire_Bullet (direction: boolean) {
     allowFiring = false
     if (direction) {
@@ -2151,6 +2136,7 @@ function create_seaweed () {
     }
 }
 let button_released = false
+let spidrr_fire: Sprite = null
 let Seaweed: Sprite = null
 let firedNow = 0
 let bullet: Sprite = null
@@ -2176,8 +2162,10 @@ let anim_left: animation.Animation = null
 let anim_applied = false
 let MagicKey: Sprite = null
 let score_digit_index = 0
+let kill_count = 0
 let GunStatus: Sprite = null
 let jetpack: Sprite = null
+let SPIDEY_COUNT = 0
 let JETPACK_MAX_FUEL = 0
 let JP_TurnedOFF = false
 let Dave_flipped = false
@@ -2186,14 +2174,10 @@ let has_jetpack = false
 let Dave: Sprite = null
 let HaveKey = 0
 let Yellow_Gems: Sprite = null
-let spidrr_fire: Sprite = null
 let jetpackON = false
 let CurrentTime = 0
 let _1stOccurance = 0
-let Spiderrrr: Sprite = null
-let kill_count = 0
-let SPIDEY_COUNT = 0
-let spidey_list: Sprite[] = []
+let Spiderrr: Sprite = null
 let cntr = 0
 let theGun: Sprite = null
 let has_gun = false
@@ -2372,18 +2356,26 @@ initScores()
 max_digits_in_score = 5
 game.showLongText("Dave Awesome!!!              -Arrows Move  -A for Fire    -B for Jetpack                                  Save the       WORLD !!!", DialogLayout.Center)
 game.splash("Collect Gems &", "Find the Key to the door")
-game.onUpdateInterval(2000, function () {
+game.onUpdateInterval(2600, function () {
     if (levelCount == 3) {
-        for (let value of spidey_list) {
-            spidrr_fire = sprites.createProjectileFromSprite(img`
+        if (Math.percentChance(75)) {
+            for (let value of sprites.allOfKind(SpriteKind.Spideees)) {
+                spidrr_fire = sprites.create(img`
 . . 2 2 . . . . . . . . 
 . 2 5 5 2 2 . 2 . . . . 
 2 5 4 4 5 5 2 5 2 5 2 2 
 2 5 4 4 5 2 5 5 2 2 . . 
 . 2 5 5 2 2 . 2 . . . . 
 . . 2 2 . . . . . . . . 
-`, value, -140, 0)
-            spidrr_fire.startEffect(effects.trail)
+`, SpriteKind.Spidey_attack)
+                spidrr_fire.setPosition(value.x, value.y)
+                spidrr_fire.vx = -140
+                spidrr_fire.setFlag(SpriteFlag.StayInScreen, true)
+                spidrr_fire.startEffect(effects.trail)
+                if (true) {
+                	
+                }
+            }
         }
     }
 })
