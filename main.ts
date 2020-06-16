@@ -26,6 +26,7 @@ namespace SpriteKind {
     export const lvl_number_kind_sprite = SpriteKind.create()
     export const score_kind = SpriteKind.create()
     export const Spidey_attack = SpriteKind.create()
+    export const DaveAttackBullets = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const jetpackStatus = StatusBarKind.create()
@@ -394,6 +395,28 @@ namespace myTiles {
 . . . . . . . . . . . . . . . . 
 `
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
+    if (_1stOccurance == 0) {
+        _1stOccurance = 1
+        CurrentTime = game.runtime()
+        info.changeLifeBy(-1)
+        sprite.destroy(effects.disintegrate, 1000)
+        game.splash("Try Again")
+        jetpackON = false
+        CreateDave()
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location) {
+    game.splash("Your Score", convertToText(info.score()))
+    if (levelCount <= MaxLevel) {
+        destroyLevel(levelCount)
+        Level_Loaded = false
+        levelCount += 1
+        createLevel(levelCount)
+    } else {
+        game.over(true)
+    }
+})
 function initScores () {
     score_display_array = sprites.allOfKind(SpriteKind.score_kind)
     score_val_copy = info.score()
@@ -470,7 +493,7 @@ function create_Gun () {
 }
 function create_Spidey () {
     cntr = 0
-    for (let value10 of tiles.getTilesByType(myTiles.tile16)) {
+    for (let value102 of tiles.getTilesByType(myTiles.tile16)) {
         Spiderrr = sprites.create(img`
 . . . . . . . . . . . . . . . . 
 . . . . c d . . . . . c c . . . 
@@ -489,38 +512,16 @@ d . c c b f b b b f b c c c d .
 . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . 
 `, SpriteKind.Spideees)
-        tiles.placeOnTile(Spiderrr, value10)
+        tiles.placeOnTile(Spiderrr, value102)
         animation.runMovementAnimation(
         Spiderrr,
         "c -140 30 300 10 0 0",
         2000,
         true
         )
-        tiles.setTileAt(value10, myTiles.tile0)
+        tiles.setTileAt(value102, myTiles.tile0)
     }
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Weeds, function (sprite, otherSprite) {
-    if (_1stOccurance == 0) {
-        _1stOccurance = 1
-        CurrentTime = game.runtime()
-        info.changeLifeBy(-1)
-        sprite.destroy(effects.disintegrate, 1000)
-        game.splash("Try Again")
-        jetpackON = false
-        CreateDave()
-    }
-})
-scene.onOverlapTile(SpriteKind.Player, myTiles.tile9, function (sprite, location) {
-    game.splash("Your Score", convertToText(info.score()))
-    if (levelCount <= MaxLevel) {
-        destroyLevel(levelCount)
-        Level_Loaded = false
-        levelCount += 1
-        createLevel(levelCount)
-    } else {
-        game.over(true)
-    }
-})
 function addYellowGems () {
     for (let value3 of tiles.getTilesByType(myTiles.tile5)) {
         Yellow_Gems = sprites.create(img`
@@ -539,27 +540,6 @@ function addYellowGems () {
         tiles.setTileAt(value3, myTiles.tile0)
     }
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Keys, function (sprite, otherSprite) {
-    info.changeScoreBy(1000)
-    game.splash("Now go thru the Door!!!")
-    HaveKey = 1
-    otherSprite.destroy()
-    for (let value22 of tiles.getTilesByType(myTiles.tile7)) {
-        tiles.setTileAt(value22, myTiles.tile0)
-    }
-    for (let value9 of tiles.getTilesByType(myTiles.tile8)) {
-        tiles.setTileAt(value9, myTiles.tile9)
-    }
-})
-statusbars.onZero(StatusBarKind.jetpackStatus, function (status) {
-    Dave.ay = GRAVITY
-    jetpackON = false
-    has_jetpack = false
-    JP_change = true
-    Dave_flipped = false
-    JP_TurnedOFF = true
-    controller.moveSprite(Dave, 100, 0)
-})
 function createLevel (level: number) {
     if (level == 1) {
         scene.setBackgroundImage(img`
@@ -1156,60 +1136,6 @@ c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c 
     respawn = false
     Level_Loaded = true
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Spideees, function (sprite, otherSprite) {
-    info.changeScoreBy(300)
-    otherSprite.destroy()
-    kill_count += 1
-    info.changeLifeBy(-1)
-    sprite.destroy(effects.disintegrate, 100)
-    game.splash("Try Again")
-    jetpackON = false
-    CreateDave()
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.BunchaFire, function (sprite, otherSprite) {
-    if (_1stOccurance == 0) {
-        _1stOccurance = 1
-        CurrentTime = game.runtime()
-        info.changeLifeBy(-1)
-        sprite.destroy()
-        game.splash("Try Again")
-        if (has_jetpack) {
-            jetpackON = false
-            JP_TurnedOFF = false
-            JP_change = false
-        }
-        CreateDave()
-    }
-})
-controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Dave.vy == 0 && !(jetpackON)) {
-        scene.centerCameraAt(Dave.x, Dave.y + 50)
-    }
-})
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (has_jetpack) {
-        if (jetpackON) {
-            jetpackON = false
-            controller.moveSprite(Dave, 100, 0)
-            Dave.ay = GRAVITY
-            JP_TurnedOFF = true
-        } else {
-            JP_TurnedOFF = false
-            Jet_fuel_status.value = jetpack_fuel_available
-            jetpackON = true
-            Dave.ay = 0
-            Dave.vy = 0
-            Dave.y = Dave.y - 5
-            controller.moveSprite(Dave, 100, 100)
-        }
-    }
-    Dave_flipped = false
-    JP_change = true
-})
-sprites.onOverlap(SpriteKind.Spideees, SpriteKind.Projectile, function (sprite, otherSprite) {
-    sprite.destroy(effects.fire, 1000)
-    otherSprite.destroy()
-})
 function parse_score_forStats (score_val: number) {
     if (score_val != score_val_copy) {
         score_val_copy = score_val
@@ -1220,9 +1146,9 @@ function parse_score_forStats (score_val: number) {
             score_digit_index += 1
         }
     }
-    for (let index = 0; index <= max_digits_in_score - 1; index++) {
-        score_display_array[index].top = scene.cameraTop()
-        score_display_array[index].left = GameStats.left + 47 - 5 * index
+    for (let index2 = 0; index2 <= max_digits_in_score - 1; index2++) {
+        score_display_array[index2].top = scene.cameraTop()
+        score_display_array[index2].left = GameStats.left + 47 - 5 * index2
     }
 }
 function destroyLevel (LevelNum: number) {
@@ -1265,40 +1191,6 @@ function createKey () {
 `, SpriteKind.Keys)
     tiles.placeOnRandomTile(MagicKey, myTiles.tile7)
 }
-controller.left.onEvent(ControllerButtonEvent.Released, function () {
-    anim_applied = false
-})
-controller.down.onEvent(ControllerButtonEvent.Released, function () {
-    if (Dave.vy == 0 && !(jetpackON)) {
-        scene.cameraFollowSprite(Dave)
-    }
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.yellowGems, function (sprite, otherSprite) {
-    info.changeScoreBy(10)
-    tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
-    otherSprite.destroy()
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Guns, function (sprite, otherSprite) {
-    info.changeScoreBy(100)
-    has_gun = true
-    otherSprite.destroy()
-    GunStatus = sprites.create(img`
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . . . . . . . 1 . . . . . . . . . . . 
-. . 1 7 7 . . 1 . . . 7 . 1 . . . 7 . . . 1 . . c b b d 1 1 1 1 d . 
-. 1 . . . 7 . 1 . . . 7 . 1 1 . . 7 . . . . 1 c c b b d d d d d f . 
-. 7 . . . . . 7 . . . 7 . 7 7 7 . 7 . . . . b c c c 1 1 1 1 1 . . . 
-. 7 . . 7 7 . 7 . . . 7 . 7 . 7 7 7 . . . b c c f 1 . . . . . . . . 
-. 7 . . . 7 . 7 . . . 7 . 7 . . 1 7 . . . b c f f . 1 . . . . . . . 
-. . 7 7 1 . . . 7 7 1 . . 7 . . . 1 . . . c c c . . . . . . . . . . 
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-`, SpriteKind.GunPresence)
-    GunStatus.setFlag(SpriteFlag.Ghost, true)
-    GunStatus.z = 150
-    GunStatus.setFlag(SpriteFlag.StayInScreen, true)
-})
 function dave_animations () {
     anim_left = animation.createAnimation(ActionKind.Walk_left, 200)
     anim_left.addAnimationFrame(img`
@@ -1595,52 +1487,6 @@ function create_jetpack () {
         tiles.setTileAt(value, myTiles.tile0)
     }
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
-    otherSprite.destroy()
-    info.changeLifeBy(-1)
-    sprite.destroy(effects.disintegrate, 1000)
-    game.splash("Try Again")
-    CreateDave()
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.BlueGems, function (sprite, otherSprite) {
-    info.changeScoreBy(20)
-    tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
-    otherSprite.destroy()
-})
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (has_gun && allowFiring) {
-        Fire_Bullet(dave_facing_right)
-    }
-})
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava0, function (sprite, location) {
-    if (_1stOccurance == 0 && DaveMoved) {
-        _1stOccurance = 1
-        CurrentTime = game.runtime()
-        info.changeLifeBy(-1)
-        sprite.destroy(effects.disintegrate, 1000)
-        game.splash("Try Again")
-        CreateDave()
-    }
-})
-controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    dave_facing_right = true
-    Dave_flipped = false
-    anim_applied = false
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Crownsss, function (sprite, otherSprite) {
-    info.changeScoreBy(500)
-    tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
-    otherSprite.destroy()
-})
-controller.up.onEvent(ControllerButtonEvent.Repeated, function () {
-    if (jetpackON) {
-    	
-    } else {
-        if (Dave.vy == 0) {
-            Dave.vy += -180
-        }
-    }
-})
 function create_Status_Bar () {
     GameStats = sprites.create(img`
 f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
@@ -1769,16 +1615,6 @@ f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
     GameStats.setFlag(SpriteFlag.StayInScreen, true)
     GameStats.z = 100
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Jetpacks, function (sprite, otherSprite) {
-    info.changeScoreBy(200)
-    otherSprite.setImage(myTiles.tile0)
-    has_jetpack = true
-    jetpack_fuel_available = JETPACK_MAX_FUEL
-    create_Jetpack_Statusbar(JETPACK_MAX_FUEL)
-})
-controller.right.onEvent(ControllerButtonEvent.Released, function () {
-    anim_applied = false
-})
 function addBlueGems () {
     for (let value8 of tiles.getTilesByType(myTiles.tile6)) {
         Blue_Gems = sprites.create(img`
@@ -1819,7 +1655,7 @@ function create_Crowns () {
     }
 }
 function create_livesforstatus (num_lives: number) {
-    for (let index = 0; index <= num_lives - 1; index++) {
+    for (let index3 = 0; index3 <= num_lives - 1; index3++) {
         life_count = sprites.create(img`
 . . . . . . . . . . . . . . . . 
 . . . . . . . . 2 2 2 2 2 2 2 . 
@@ -1841,8 +1677,8 @@ function create_livesforstatus (num_lives: number) {
         life_count.setFlag(SpriteFlag.StayInScreen, true)
         life_count.setFlag(SpriteFlag.Ghost, true)
         life_count.z = 150
-        life_count.setPosition(152 - index * 8, 8)
-        lives_array[index] = life_count
+        life_count.setPosition(152 - index3 * 8, 8)
+        lives_array[index3] = life_count
     }
 }
 function create_Fire () {
@@ -1947,11 +1783,6 @@ function CreateDave () {
     dave_facing_right = true
     dave_animations()
 }
-controller.left.onEvent(ControllerButtonEvent.Repeated, function () {
-    dave_facing_right = false
-    Dave_flipped = false
-    anim_applied = false
-})
 function Fire_Bullet (direction: boolean) {
     allowFiring = false
     if (direction) {
@@ -1972,6 +1803,7 @@ c b f f f f f f c c c b .
 `, Dave, -200, 0)
         bullet.image.flipX()
     }
+    bullet.setKind(SpriteKind.DaveAttackBullets)
     firedNow = game.runtime()
 }
 function create_seaweed () {
@@ -2135,22 +1967,198 @@ function create_seaweed () {
         )
     }
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Keys, function (sprite, otherSprite) {
+    info.changeScoreBy(1000)
+    game.splash("Now go thru the Door!!!")
+    HaveKey = 1
+    otherSprite.destroy()
+    for (let value22 of tiles.getTilesByType(myTiles.tile7)) {
+        tiles.setTileAt(value22, myTiles.tile0)
+    }
+    for (let value9 of tiles.getTilesByType(myTiles.tile8)) {
+        tiles.setTileAt(value9, myTiles.tile9)
+    }
+})
+statusbars.onZero(StatusBarKind.jetpackStatus, function (status) {
+    Dave.ay = GRAVITY
+    jetpackON = false
+    has_jetpack = false
+    JP_change = true
+    Dave_flipped = false
+    JP_TurnedOFF = true
+    controller.moveSprite(Dave, 100, 0)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Spideees, function (sprite, otherSprite) {
+    info.changeScoreBy(300)
+    otherSprite.destroy()
+    kill_count += 1
+    info.changeLifeBy(-1)
+    sprite.destroy(effects.disintegrate, 100)
+    game.splash("Try Again")
+    jetpackON = false
+    CreateDave()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.BunchaFire, function (sprite, otherSprite) {
+    if (_1stOccurance == 0) {
+        _1stOccurance = 1
+        CurrentTime = game.runtime()
+        info.changeLifeBy(-1)
+        sprite.destroy()
+        game.splash("Try Again")
+        if (has_jetpack) {
+            jetpackON = false
+            JP_TurnedOFF = false
+            JP_change = false
+        }
+        CreateDave()
+    }
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Dave.vy == 0 && !(jetpackON)) {
+        scene.centerCameraAt(Dave.x, Dave.y + 50)
+    }
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (has_jetpack) {
+        if (jetpackON) {
+            jetpackON = false
+            controller.moveSprite(Dave, 100, 0)
+            Dave.ay = GRAVITY
+            JP_TurnedOFF = true
+        } else {
+            JP_TurnedOFF = false
+            Jet_fuel_status.value = jetpack_fuel_available
+            jetpackON = true
+            Dave.ay = 0
+            Dave.vy = 0
+            Dave.y = Dave.y - 5
+            controller.moveSprite(Dave, 100, 100)
+        }
+    }
+    Dave_flipped = false
+    JP_change = true
+})
+controller.left.onEvent(ControllerButtonEvent.Released, function () {
+    anim_applied = false
+})
+controller.down.onEvent(ControllerButtonEvent.Released, function () {
+    if (Dave.vy == 0 && !(jetpackON)) {
+        scene.cameraFollowSprite(Dave)
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.yellowGems, function (sprite, otherSprite) {
+    info.changeScoreBy(10)
+    tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
+    otherSprite.destroy()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Guns, function (sprite, otherSprite) {
+    info.changeScoreBy(100)
+    has_gun = true
+    otherSprite.destroy()
+    GunStatus = sprites.create(img`
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . 1 . . . . . . . . . . . 
+. . 1 7 7 . . 1 . . . 7 . 1 . . . 7 . . . 1 . . c b b d 1 1 1 1 d . 
+. 1 . . . 7 . 1 . . . 7 . 1 1 . . 7 . . . . 1 c c b b d d d d d f . 
+. 7 . . . . . 7 . . . 7 . 7 7 7 . 7 . . . . b c c c 1 1 1 1 1 . . . 
+. 7 . . 7 7 . 7 . . . 7 . 7 . 7 7 7 . . . b c c f 1 . . . . . . . . 
+. 7 . . . 7 . 7 . . . 7 . 7 . . 1 7 . . . b c f f . 1 . . . . . . . 
+. . 7 7 1 . . . 7 7 1 . . 7 . . . 1 . . . c c c . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+`, SpriteKind.GunPresence)
+    GunStatus.setFlag(SpriteFlag.Ghost, true)
+    GunStatus.z = 150
+    GunStatus.setFlag(SpriteFlag.StayInScreen, true)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.BlueGems, function (sprite, otherSprite) {
+    info.changeScoreBy(20)
+    tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
+    otherSprite.destroy()
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (has_gun && allowFiring) {
+        Fire_Bullet(dave_facing_right)
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava0, function (sprite, location) {
+    if (_1stOccurance == 0 && DaveMoved) {
+        _1stOccurance = 1
+        CurrentTime = game.runtime()
+        info.changeLifeBy(-1)
+        sprite.destroy(effects.disintegrate, 1000)
+        game.splash("Try Again")
+        CreateDave()
+    }
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    dave_facing_right = true
+    Dave_flipped = false
+    anim_applied = false
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Crownsss, function (sprite, otherSprite) {
+    info.changeScoreBy(500)
+    tiles.setTileAt(tiles.getTileLocation(otherSprite.x, otherSprite.y), myTiles.tile0)
+    otherSprite.destroy()
+})
+controller.up.onEvent(ControllerButtonEvent.Repeated, function () {
+    if (jetpackON) {
+    	
+    } else {
+        if (Dave.vy == 0) {
+            Dave.vy += -180
+        }
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Jetpacks, function (sprite, otherSprite) {
+    info.changeScoreBy(200)
+    otherSprite.setImage(myTiles.tile0)
+    has_jetpack = true
+    jetpack_fuel_available = JETPACK_MAX_FUEL
+    create_Jetpack_Statusbar(JETPACK_MAX_FUEL)
+})
+sprites.onOverlap(SpriteKind.Spideees, SpriteKind.DaveAttackBullets, function (sprite, otherSprite) {
+    sprite.destroy(effects.fire, 1000)
+    otherSprite.destroy()
+})
+controller.right.onEvent(ControllerButtonEvent.Released, function () {
+    anim_applied = false
+})
+controller.left.onEvent(ControllerButtonEvent.Repeated, function () {
+    dave_facing_right = false
+    Dave_flipped = false
+    anim_applied = false
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Spidey_attack, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    info.changeLifeBy(-1)
+    sprite.destroy(effects.disintegrate, 1000)
+    game.splash("Try Again")
+    CreateDave()
+})
 let button_released = false
 let spidrr_fire: Sprite = null
+let anim_applied = false
+let kill_count = 0
+let JP_TurnedOFF = false
+let Dave_flipped = false
+let JP_change = false
+let HaveKey = 0
 let Seaweed: Sprite = null
 let firedNow = 0
 let bullet: Sprite = null
+let allowFiring = false
+let dave_facing_right = false
 let DaveY = 0
 let DaveX = 0
+let DaveMoved = false
 let Firepit: Sprite = null
 let fire_anim: animation.Animation = null
 let lives_array: Sprite[] = []
 let life_count: Sprite = null
 let A_Crown: Sprite = null
 let Blue_Gems: Sprite = null
-let DaveMoved = false
-let dave_facing_right = false
-let allowFiring = false
 let anim_jump_left: animation.Animation = null
 let anim_jump: animation.Animation = null
 let anim_jetpk_left: animation.Animation = null
@@ -2159,24 +2167,15 @@ let anim_idle_left: animation.Animation = null
 let anim_idle: animation.Animation = null
 let anim_right: animation.Animation = null
 let anim_left: animation.Animation = null
-let anim_applied = false
 let MagicKey: Sprite = null
+let Dave: Sprite = null
 let score_digit_index = 0
-let kill_count = 0
 let GunStatus: Sprite = null
 let jetpack: Sprite = null
+let has_jetpack = false
 let SPIDEY_COUNT = 0
 let JETPACK_MAX_FUEL = 0
-let JP_TurnedOFF = false
-let Dave_flipped = false
-let JP_change = false
-let has_jetpack = false
-let Dave: Sprite = null
-let HaveKey = 0
 let Yellow_Gems: Sprite = null
-let jetpackON = false
-let CurrentTime = 0
-let _1stOccurance = 0
 let Spiderrr: Sprite = null
 let cntr = 0
 let theGun: Sprite = null
@@ -2187,6 +2186,9 @@ let GameStats: Sprite = null
 let score_sprite: Sprite = null
 let score_val_copy = 0
 let score_display_array: Sprite[] = []
+let jetpackON = false
+let CurrentTime = 0
+let _1stOccurance = 0
 let max_digits_in_score = 0
 let display_level_number: Image[] = []
 let Level_Loaded = false
@@ -2359,7 +2361,7 @@ game.splash("Collect Gems &", "Find the Key to the door")
 game.onUpdateInterval(2600, function () {
     if (levelCount == 3) {
         if (Math.percentChance(75)) {
-            for (let value of sprites.allOfKind(SpriteKind.Spideees)) {
+            for (let value2 of sprites.allOfKind(SpriteKind.Spideees)) {
                 spidrr_fire = sprites.createProjectileFromSprite(img`
 . . 2 2 . . . . . . . . 
 . 2 5 5 2 2 . 2 . . . . 
@@ -2367,7 +2369,8 @@ game.onUpdateInterval(2600, function () {
 2 5 4 4 5 2 5 5 2 2 . . 
 . 2 5 5 2 2 . 2 . . . . 
 . . 2 2 . . . . . . . . 
-`, value, -180, 0)
+`, value2, -180, 0)
+                spidrr_fire.setKind(SpriteKind.Spidey_attack)
                 spidrr_fire.startEffect(effects.trail)
             }
         }
@@ -2378,9 +2381,9 @@ game.onUpdate(function () {
     level_num_sprite.setImage(display_level_number[levelCount - 0])
     level_num_sprite.top = scene.cameraTop()
     level_num_sprite.right = GameStats.right - 66
-    for (let index = 0; index <= info.life() - 1; index++) {
-        lives_array[index].top = scene.cameraTop()
-        lives_array[index].right = GameStats.right - 10 * index
+    for (let index4 = 0; index4 <= info.life() - 1; index4++) {
+        lives_array[index4].top = scene.cameraTop()
+        lives_array[index4].right = GameStats.right - 10 * index4
     }
     parse_score_forStats(info.score())
     if (has_gun) {
