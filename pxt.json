@@ -1,5 +1,5 @@
 {
-    "name": "DaveAwesome_3",
+    "name": "DaveAwesome_PublishNov30_21",
     "description": "",
     "dependencies": {
         "device": "*",
@@ -23,7 +23,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "1.6.24",
+        "target": "1.7.22",
         "targetId": "arcade"
     },
     "supportedTargets": [
